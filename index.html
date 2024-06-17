@@ -1,274 +1,513 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SalesTug Dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SalesTug Dashboard</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.css">
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: #ffffff; /* White background */
+    font-family: Arial, sans-serif;
+}
+.box {
+    position: relative;
+    width: 100%;
+    max-width: 1450px; /* Adjusted maximum width */
+    height: 650px;
+    border-radius: 10px; /* Rounded corners */
+    overflow: hidden; /* Ensure contents don't overflow */
+    margin: 20px; /* Added margin for spacing */
+}
+.box::before {
+    content: '';
+    position: absolute;
+    top: -2.5px;
+    left: -2.5px;
+    right: -2.5px;
+    bottom: -2.5px;
+    background: linear-gradient(90deg, #a445b2, #fa4299);
+    border-radius: 10px; /* Rounded corners */
+    z-index: -1;
+}
+.box span {
+    position: absolute;
+    inset: 4px;
+    background: rgb(255, 255, 255);
+    border-radius: 10px;
+    z-index: 1;
+}
+/* Sidebar Styling */
+.sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100%;
+    background: #87ceeb; /* Sky blue */
+    color: #000000; /* Black text */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    z-index: 2;
+    overflow-y: auto;
+    box-shadow: -10px 0px 20px rgba(0, 0, 0, 0.2); /* Long shadow effect */
+}
+.sidebar img {
+    width: 65px;
+    height: 65px;
+    margin-bottom: 20px;
+    border-radius: 50%;
+}
+.sidebar h2 {
+    margin-bottom: 20px;
+}
+.sidebar ul {
+    list-style-type: none;
+    width: 100%;
+}
+.sidebar ul li {
+    width: 100%;
+    margin-bottom: 10px;
+}
+.sidebar ul li .dashboard-box {
+    width: 100%;
+    padding: 15px;
+    background-color: #ffa500; /* Light orange */
+    color: #ffffff; /* White text */
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-size: 1rem;
+}
+.sidebar ul li .dashboard-box:hover {
+    background-color: #ffffff; /* White hover */
+    color: #000000; /* Black text on hover */
+}
+/* Top Navigation Bar Styling */
+.top-nav {
+    position: absolute;
+    top: 0;
+    left: 250px;
+    width: calc(100% - 250px);
+    height: 60px;
+    background: #ffa500; /* Light orange */
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    color: #ffffff; /* White text */
+    border-top-right-radius: 10px;
+    z-index: 2;
+}
+.top-nav .logo-container {
+    display: flex;
+    align-items: center;
+}
+.top-nav .logo-container img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+.top-nav h2 {
+    margin-left: auto;
+    margin-left: 25%; /* Adjusted position */
+}
+/* Main Content Area Styling */
+.main-content {
+    position: absolute;
+    top: 60px;
+    left: 250px;
+    width: calc(100% - 250px);
+    height: calc(100% - 60px);
+    background: #ffffff; /* White background */
+    padding: 20px;
+    overflow-y: auto;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+/* Content Sections Styling */
+.content-section {
+    display: none;
+}
+.content-section.active {
+    display: block;
+}
+.canvas-container {
+    width: 100%; /* Adjusted width for responsiveness */
+    height: 300px; /* Adjusted height for smaller screens */
+    margin: 20px 0; /* Added margin for spacing */
+}
+/* Video Container */
+.video-container {
+    text-align: center;
+    padding: 20px;
+}
+.video-container video {
+    width: 80%;
+    height: auto;
+    border: 2px solid #000000; /* Black border */
+    border-radius: 10px;
+}
+/* Note Styling */
+.note {
+    position: absolute;
+    bottom: 1px;
+    width: 100%;
+    text-align: bottom;
+    font-size: 0.8rem;
+    color: grey;
+    padding: 10px;
+}
+/* Toggle Button for Mobile View */
+.toggle-button {
+    display: none;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 3;
+    background-color: #ffa500; /* Light orange */
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    color: #ffffff; /* White text */
+    cursor: pointer;
+}
+.toggle-button:hover {
+    background-color: #ffffff; /* White hover */
+    color: #ffa500; /* Light orange text */
+}
+/* Close Button for Mobile View */
+.close-button {
+    display: none;
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    z-index: 3;
+    background-color: #ffa500; /* Light orange */
+    border: none;
+    padding: 10px;
+    border-radius: 50%;
+    color: #ffffff; /* White text */
+    cursor: pointer;
+}
+.close-button:hover {
+    background-color: #ffffff; /* White hover */
+    color: #ffa500; /* Light orange text */
+}
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+        box-shadow: none;
+    }
+    .top-nav {
+    position: absolute;
+    top: 0;
+    left: 0; /* Adjusted to 0 for mobile view */
+    width: 100%; /* Adjusted to 100% for mobile view */
+    height: 60px;
+    background: #ffa500; /* Light orange */
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    color: #ffffff; /* White text */
+    border-top-right-radius: 10px;
+    z-index: 2;
+}
 
-        body {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background: #ffffff; /* White background */
-            font-family: Arial, sans-serif;
-        }
-
-        .box {
-            --border-width: -5px;
-            position: relative;
-            width: 100%;
-            height: 100vh;
-            max-width: 1450px;
-        }
-
-        .box::before,
-        .box::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            border-radius: 20px;
-            background: linear-gradient(90deg, #a445b2, #fa4299);
-            animation: rotate-gradient 4s infinite linear;
-        }
-
-        .box::after {
-            filter: blur(40px);
-            opacity: 0.75;
-        }
-
-        .box span {
-            position: absolute;
-            inset: 4px;
-            background: #222;
-            border-radius: 16px;
-            z-index: 1;
-        }
-
-        @property --a {
-            syntax: "<angle>";
-            inherits: false;
-            initial-value: 0deg;
-        }
-
-        :root {
-            --a: 0deg;
-        }
-
-        @keyframes rotate-gradient {
-            to {
-                --a: 360deg;
-            }
-        }
-
-        /* Sidebar Styling */
-        .sidebar {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #87ceeb; /* Sky blue */
-            color: #000000; /* Black text */
-            padding: 20px;
-            border-radius: 16px;
-            z-index: 2;
-            overflow-y: auto;
-        }
-
-        .sidebar .logo-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .sidebar .logo-container img {
-            width: 65px;
-            height: 65px;
-            margin-bottom: 10px;
-            border-radius: 50%;
-        }
-
-        .sidebar h2 {
-            margin-bottom: 15px;
-        }
-
-        .sidebar h3 {
-            margin-bottom: 20px;
-            font-size: larger;
-        }
-
-        .sidebar ul {
-            list-style-type: none;
-            width: 100%;
-        }
-
-        .sidebar ul li {
-            width: 100%;
-            margin-bottom: 10px;
-        }
-
-        .sidebar ul li .dashboard-box {
-            width: 100%;
-            padding: 15px;
-            background-color: #ffa500; /* Light orange */
-            color: #ffffff; /* White text */
-            border-radius: 10px;
-            text-align: center;
-            cursor: pointer;
-            transition: background 0.3s;
-            font-size: 1rem;
-        }
-
-        .sidebar ul li .dashboard-box:hover {
-            background-color: #ffffff; /* White hover */
-            color: #000000; /* Black text on hover */
-        }
-    </style>
+    .main-content {
+        left: 0;
+        width: 100%;
+    }
+    .toggle-button {
+        display: block;
+    }
+    .close-button {
+        display: block;
+    }
+    .canvas-container {
+        height: 250px; /* Adjusted height for smaller screens */
+    }
+}
+</style>
 </head>
 <body>
-    <div class="box">
-        <span>
-            <div class="sidebar">
-                <div class="logo-container">
-                    <img src="logo.jpeg" alt="SalesTug Logo">
-                    <h2>SalesTug Voice AI</h2>
+<div class="box">
+    <span>
+        <button class="toggle-button" onclick="toggleSidebar()">☰ Menu</button>
+        <button class="close-button" onclick="closeSidebar()">↺</button>
+        <div class="sidebar">
+            <img src="logo.jpeg" alt="SalesTug Logo">
+            <h2>SalesTug Voice AI</h2>
+            <ul>
+                <li><div class="dashboard-box" onclick="showContent('demo-video')">Demo Video</div></li>
+                <li><div class="dashboard-box" onclick="showContent('daily-call-summary')">Daily Call Summary</div></li>
+                <li><div class="dashboard-box" onclick="showContent('call-recordings')">Call Recordings</div></li>
+                <li><div class="dashboard-box" onclick="showContent('call-outcomes')">Call Outcomes</div></li>
+                <li><div class="dashboard-box" onclick="showContent('lead-status')">Lead Status</div></li>
+                <li><div class="dashboard-box" onclick="showContent('response-rate')">Response Rate</div></li>
+                <li><div class="dashboard-box" onclick="showContent('appointments-scheduled')">Appointments Scheduled</div></li>
+                <li><div class="dashboard-box" onclick="showContent('performance-metrics')">Performance Metrics</div></li>
+            </ul>
+        </div>
+        <div class="top-nav">
+            <h2>Dashboard</h2>
+        </div>
+        <div class="main-content">
+            <div id="demo-video" class="content-section active">
+                <h2>Demo Video</h2>
+                <div class="video-container">
+                    <video controls>
+                        <source src="demo.mp4" type="video/mp4"                         Your browser does not support the video tag.
+                    </video>
                 </div>
-                <h3>Dashboard</h3>
-                <ul>
-                    <li><div class="dashboard-box" onclick="showContent('demo-video')">Demo Video</div></li>
-                    <li><div class="dashboard-box" onclick="showContent('daily-call-summary')">Daily Call Summary</div></li>
-                    <li><div class="dashboard-box" onclick="showContent('call-recordings')">Call Recordings</div></li>
-                    <li><div class="dashboard-box" onclick="showContent('call-outcomes')">Call Outcomes</div></li>
-                    <li><div class="dashboard-box" onclick="showContent('lead-status')">Lead Status</div></li>
-                    <li><div class="dashboard-box" onclick="showContent('response-rate')">Response Rate</div></li>
-                    <li><div class="dashboard-box" onclick="showContent('appointments-scheduled')">Appointments Scheduled</div></li>
-                    <li><div class="dashboard-box" onclick="showContent('performance-metrics')">Performance Metrics</div></li>
-                </ul>
             </div>
-        </span>
+            <div id="daily-call-summary" class="content-section">
+                <h2>Daily Call Summary</h2>
+                <p>Total calls made: 150</p>
+                <p>Successful connections: 120</p>
+                <p>Voicemail left: 30</p>
+                <div class="canvas-container">
+                    <canvas id="dailyCallSummaryChart"></canvas>
+                </div>
+            </div>
+            <div id="call-recordings" class="content-section">
+                <h2>Call Recordings</h2>
+                <p>Recordings of the latest calls go here.</p>
+            </div>
+            <div id="call-outcomes" class="content-section">
+                <h2>Call Outcomes</h2>
+                <p>Uninterested leads: 10</p>
+                <p>Wrong numbers/disconnected calls: 5</p>
+                <p>Follow-up calls needed: 15</p>
+                <div class="canvas-container">
+                    <canvas id="callOutcomesChart"></canvas>
+                </div>
+            </div>
+            <div id="lead-status" class="content-section">
+                <h2>Lead Status</h2>
+                <p>Converted to appointments: 30</p>
+                <p>Leads requiring immediate attention: 20</p>
+                <p>Yet to be contacted: 50</p>
+                <div class="canvas-container">
+                    <canvas id="leadStatusChart"></canvas>
+                </div>
+            </div>
+            <div id="response-rate" class="content-section">
+                <h2>Response Rate</h2>
+                <p>Percentage of calls answered: 80%</p>
+                <p>Percentage of calls resulting in a conversation: 75%</p>
+                <p>Percentage of calls leading to a positive outcome: 60%</p>
+                <div class="canvas-container">
+                    <canvas id="responseRateChart"></canvas>
+                </div>
+            </div>
+            <div id="appointments-scheduled" class="content-section">
+                <h2>Appointments Scheduled</h2>
+                <p>Number of appointments scheduled: 20</p>
+                <p>Details of scheduled appointments: Date, Time, Lead Info</p>
+                <p>Number of appointments made by AI when live agent is not available: 5</p>
+                <div class="canvas-container">
+                    <canvas id="appointmentSchedulingChart"></canvas>
+                </div>
+            </div>
+            <div id="performance-metrics" class="content-section">
+                <h2>Performance Metrics (per day)</h2>
+                <p>Details about performance metrics go here.</p>
+                <div class="canvas-container">
+                    <canvas id="performanceMetricsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </span>
+    <div class="note">
+        Note: This dashboard is an example, and we can create one like this for you.
     </div>
+</div>
+<!-- Include Chart.js library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+<script>
+    function showContent(sectionId) {
+        const sections = document.querySelectorAll('.content-section');
+        sections.forEach(section => {
+            section.classList.remove('active');
+        });
+        document.getElementById(sectionId).classList.add('active');
 
-    <!-- Include Chart.js library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
-    <script>
-        function showContent(sectionId) {
-            const sections = document.querySelectorAll('.content-section');
-            sections.forEach(section => {
-                section.classList.remove('active');
-            });
-            document.getElementById(sectionId).classList.add('active');
+        // Hide sidebar on mobile view after selecting a section
+        if (window.innerWidth <= 768) {
+            document.querySelector('.sidebar').style.display = 'none';
+            document.querySelector('.close-button').style.display = 'none';
+            document.querySelector('.toggle-button').style.display = 'block';
         }
+    }
 
-        var dailyCallSummaryCtx = document.getElementById('dailyCallSummaryChart').getContext('2d');
-        var dailyCallSummaryChart = new Chart(dailyCallSummaryCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Total Calls Made', 'Successful Connections', 'Voicemail Left'],
-                datasets: [{
-                    label: 'Count',
-                    data: [150, 120, 30],
-                    backgroundColor: ['#4682B4', '#FFA07A', '#808080'] // Steel blue, Light salmon, Gray
-                }]
-            },
-            options: {
-                responsive: true
-            }
-        });
+    function toggleSidebar() {
+        const sidebar = document.querySelector('.sidebar');
+        const closeButton = document.querySelector('.close-button');
+        const toggleButton = document.querySelector('.toggle-button');
 
-        var callOutcomesCtx = document.getElementById('callOutcomesChart').getContext('2d');
-        var callOutcomesChart = new Chart(callOutcomesCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Uninterested Leads', 'Wrong Numbers/Disconnected Calls', 'Follow-up Calls Needed'],
-                datasets: [{
-                    label: 'Count',
-                    data: [10, 5, 15],
-                    backgroundColor: ['#4682B4', '#FFA07A', '#808080'] // Steel blue, Light salmon, Gray
-                }]
-            },
-            options: {
-                responsive: true
-            }
-        });
+        if (sidebar.style.display === 'block') {
+            sidebar.style.display = 'none';
+            closeButton.style.display = 'none';
+            toggleButton.style.display = 'block';
+        } else {
+            sidebar.style.display = 'block';
+            closeButton.style.display = 'block';
+            toggleButton.style.display = 'none';
+        }
+    }
 
-        var leadStatusCtx = document.getElementById('leadStatusChart').getContext('2d');
-        var leadStatusChart = new Chart(leadStatusCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Converted to Appointments', 'Requiring Immediate Attention', 'Yet to Be Contacted'],
-                datasets: [{
-                    label: 'Leads Status',
-                    data: [30, 20, 50],
-                    backgroundColor: ['#4682B4', '#FFA07A', '#808080'] // Steel blue, Light salmon, Gray
-                }]
-            },
-            options: {
-                responsive: true
-            }
-        });
+    function closeSidebar() {
+        document.querySelector('.sidebar').style.display = 'none';
+        document.querySelector('.close-button').style.display = 'none';
+        document.querySelector('.toggle-button').style.display = 'block';
+    }
 
-        var responseRateCtx = document.getElementById('responseRateChart').getContext('2d');
-        var responseRateChart = new Chart(responseRateCtx, {
-            type: 'pie',
-            data: {
-                labels: ['Answered Calls', 'Resulted in Conversation', 'Led to Positive Outcome'],
-                datasets: [{
-                    label: 'Response Rate',
-                    data: [80, 75, 60],
-                    backgroundColor: ['#4682B4', '#FFA07A', '#808080'] // Steel blue, Light salmon, Gray
-                }]
-            },
-            options: {
-                responsive: true
+    var dailyCallSummaryCtx = document.getElementById('dailyCallSummaryChart').getContext('2d');
+    var dailyCallSummaryChart = new Chart(dailyCallSummaryCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Total Calls Made', 'Successful Connections', 'Voicemail Left'],
+            datasets: [{
+                label: 'Count',
+                data: [150, 120, 30],
+                backgroundColor: ['#4682B4', '#FFA07A', '#808080'] // Steel blue, Light salmon, Gray
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false, // Added to ensure responsiveness
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
             }
-        });
+        }
+    });
 
-        var appointmentSchedulingCtx = document.getElementById('appointmentSchedulingChart').getContext('2d');
-        var appointmentSchedulingChart = new Chart(appointmentSchedulingCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Scheduled by Live Agents', 'Scheduled by AI'],
-                datasets: [{
-                    label: 'Appointments',
-                    data: [15, 5],
-                    backgroundColor: ['#4682B4', '#FFA07A'] // Steel blue, Light salmon
-                }]
-            },
-            options: {
-                responsive: true
+    var callOutcomesCtx = document.getElementById('callOutcomesChart').getContext('2d');
+    var callOutcomesChart = new Chart(callOutcomesCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Uninterested Leads', 'Wrong Numbers/Disconnected Calls', 'Follow-up Calls Needed'],
+            datasets: [{
+                label: 'Count',
+                data: [10, 5, 15],
+                backgroundColor: ['#4682B4', '#FFA07A', '#808080'] // Steel blue, Light salmon, Gray
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false, // Added to ensure responsiveness
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
             }
-        });
+        }
+    });
 
-        var performanceMetricsCtx = document.getElementById('performanceMetricsChart').getContext('2d');
-        var performanceMetricsChart = new Chart(performanceMetricsCtx, {
-            type: 'line',
-            data: {
-                labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
-                datasets: [{
-                    label: 'Performance Metrics',
-                    data: [80, 90, 70, 85, 75, 95, 85],
-                    borderColor: '#4682B4', // Steel blue
-                    backgroundColor: 'rgba(70, 130, 180, 0.2)' // Light steel blue
-                }]
-            },
-            options: {
-                responsive: true
+    var leadStatusCtx = document.getElementById('leadStatusChart').getContext('2d');
+    var leadStatusChart = new Chart(leadStatusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Converted to Appointments', 'Requiring Immediate Attention', 'Yet to Be Contacted'],
+            datasets: [{
+                label: 'Leads Status',
+                data: [30, 20, 50],
+                backgroundColor: ['#4682B4', '#FFA07A', '#808080'] // Steel blue, Light salmon, Gray
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false // Added to ensure responsiveness
+        }
+    });
+
+    var responseRateCtx = document.getElementById('responseRateChart').getContext('2d');
+    var responseRateChart = new Chart(responseRateCtx, {
+        type: 'pie',
+        data: {
+            labels: ['Answered Calls', 'Resulted in Conversation', 'Led to Positive Outcome'],
+            datasets: [{
+                label: 'Response Rate',
+                data: [80, 75, 60],
+                backgroundColor: ['#4682B4', '#FFA07A', '#808080'] // Steel blue, Light salmon, Gray
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false // Added to ensure responsiveness
+        }
+    });
+
+    var appointmentSchedulingCtx = document.getElementById('appointmentSchedulingChart').getContext('2d');
+    var appointmentSchedulingChart = new Chart(appointmentSchedulingCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Scheduled by Live Agents', 'Scheduled by AI'],
+            datasets: [{
+                label: 'Appointments',
+                data: [15, 5],
+                backgroundColor: ['#4682B4', '#FFA07A'] // Steel blue, Light salmon
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false, // Added to ensure responsiveness
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
             }
-        });
-    </script>
+        }
+    });
+
+    var performanceMetricsCtx = document.getElementById('performanceMetricsChart').getContext('2d');
+    var performanceMetricsChart = new Chart(performanceMetricsCtx, {
+        type: 'line',
+        data: {
+            labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
+            datasets: [{
+                label: 'Performance Metrics',
+                data: [80, 90, 70, 85, 75, 95, 85],
+                borderColor: '#4682B4', // Steel blue
+                backgroundColor: 'rgba(70, 130, 180, 0.2)', // Steel blue with transparency
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false, // Added to ensure responsiveness
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+</script>
 </body>
 </html>
