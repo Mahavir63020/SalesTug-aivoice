@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible="IE=edge">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SalesTug Dashboard</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.css">
@@ -22,9 +22,12 @@ body {
 }
 .box {
     position: relative;
-    width: 1450px;
+    width: 100%;
+    max-width: 1450px; /* Adjusted maximum width */
     height: 650px;
-    border-radius: 20px; /* Rounded corners */
+    border-radius: 10px; /* Rounded corners */
+    overflow: hidden; /* Ensure contents don't overflow */
+    margin: 20px; /* Added margin for spacing */
 }
 .box::before {
     content: '';
@@ -40,7 +43,7 @@ body {
 .box span {
     position: absolute;
     inset: 4px;
-    background: #222;
+    background: rgb(255, 255, 255);
     border-radius: 10px;
     z-index: 1;
 }
@@ -61,6 +64,7 @@ body {
     border-bottom-left-radius: 10px;
     z-index: 2;
     overflow-y: auto;
+    box-shadow: -10px 0px 20px rgba(0, 0, 0, 0.2); /* Long shadow effect */
 }
 .sidebar img {
     width: 65px;
@@ -120,7 +124,8 @@ body {
     margin-right: 10px;
 }
 .top-nav h2 {
-    margin-left: 20px;
+    margin-left: auto;
+    margin-left: 25%; /* Adjusted position */
 }
 /* Main Content Area Styling */
 .main-content {
@@ -132,6 +137,7 @@ body {
     background: #ffffff; /* White background */
     padding: 20px;
     overflow-y: auto;
+    border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
 }
 /* Content Sections Styling */
@@ -142,9 +148,9 @@ body {
     display: block;
 }
 .canvas-container {
-    width: 40%; /* Decreased width by 20% */
-    height: 40%; /* Decreased height by 20% */
-    margin: 0 auto; /* Center the canvas */
+    width: 100%; /* Adjusted width for responsiveness */
+    height: 300px; /* Adjusted height for smaller screens */
+    margin: 20px 0; /* Added margin for spacing */
 }
 /* Video Container */
 .video-container {
@@ -167,11 +173,120 @@ body {
     color: grey;
     padding: 10px;
 }
+/* Toggle Button for Mobile View */
+.toggle-button {
+    display: none;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 3;
+    background-color: #ffa500; /* Light orange */
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    color: #ffffff; /* White text */
+    cursor: pointer;
+}
+.toggle-button:hover {
+    background-color: #ffffff; /* White hover */
+    color: #ffa500; /* Light orange text */
+}
+/* Close Button for Mobile View */
+.close-button {
+    display: none;
+    position: absolute;
+    top: 15%;
+    left: 10px;
+    z-index: 3;
+    background-color: #ffa500; /* Light orange */
+    border: none;
+    padding: 20px;
+    border-radius: 50%;
+    color: #ffffff; /* White text */
+    cursor: pointer;
+    font-size: 1.5rem;
+    transform: rotate(90deg);
+}
+.close-button:hover {
+    background-color: #ffffff; /* White hover */
+    color: #ffa500; /* Light orange text */
+}
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+        box-shadow: none;
+    }
+    .top-nav {
+        position: absolute;
+        top: 0;
+        left: 0; /* Adjusted to 0 for mobile view */
+        width: 100%; /* Adjusted to 100% for mobile view */
+        height: 60px;
+        background: #ffa500; /* Light orange */
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        color: #ffffff; /* White text */
+        border-top-right-radius: 10px;
+        z-index: 2;
+    }
+    .main-content {
+        left: 0;
+        width: 100%;
+    }
+    .toggle-button {
+        display: block;
+    }
+    
+    .close-button {
+            position: fixed;
+            bottom: 10%; /* 10% up from the bottom */
+            right: 5%; /* 5% from the right */
+            z-index: 1000; /* Ensure it's above other elements */
+            background-color: #ffa500; /* Steel blue */
+            color: #01070a;
+            left: 90%;
+            border: none;
+            padding: 1px;
+            cursor: pointer;
+            font-size: 20px;
+            height: 40px;
+            width: 40px;
+            font-weight: bolder;
+        }
+
+        /* Styling the arrow */
+        .close-button::before {
+            content: ''; /* Arrow character */
+            display: block;
+            position: absolute;
+            top: 50%;
+            right: -10px; /* Adjust as needed */
+            width: 0;
+            height: 0;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-left: 10px solid #4682B4; /* Steel blue */
+            transform: translateY(-50%);
+        }
+
+    .canvas-container {
+        height: 250px; /* Adjusted height for smaller screens */
+    }
+}
 </style>
 </head>
 <body>
 <div class="box">
     <span>
+        <button class="toggle-button" onclick="toggleSidebar()">☰ Menu</button>
+        <button class="close-button" onclick="closeSidebar()" title="Close Sidebar">↓</button>
         <div class="sidebar">
             <img src="logo.jpeg" alt="SalesTug Logo">
             <h2>SalesTug Voice AI</h2>
@@ -191,7 +306,7 @@ body {
         </div>
         <div class="main-content">
             <div id="demo-video" class="content-section active">
-                <h2>Demo Video</h2>
+                                  <h2>Demo Video</h2>
                 <div class="video-container">
                     <video controls>
                         <source src="demo.mp4" type="video/mp4">
@@ -210,11 +325,7 @@ body {
             </div>
             <div id="call-recordings" class="content-section">
                 <h2>Call Recordings</h2>
-                <p>Access to call recordings</p>
-                <p>Transcripts of conversations for review</p>
-                <div class="canvas-container">
-                    <canvas id="callRecordingsChart"></canvas>
-                </div>
+                <p>Recordings of the latest calls go here.</p>
             </div>
             <div id="call-outcomes" class="content-section">
                 <h2>Call Outcomes</h2>
@@ -227,9 +338,9 @@ body {
             </div>
             <div id="lead-status" class="content-section">
                 <h2>Lead Status</h2>
-                <p>Total leads contacted: 100</p>
-                <p>Leads converted into appointments: 30</p>
+                <p>Converted to appointments: 30</p>
                 <p>Leads requiring immediate attention: 20</p>
+                <p>Yet to be contacted: 50</p>
                 <div class="canvas-container">
                     <canvas id="leadStatusChart"></canvas>
                 </div>
@@ -260,7 +371,6 @@ body {
                 </div>
             </div>
         </div>
-        
     </span>
     <div class="note">
         Note: This dashboard is an example, and we can create one like this for you.
@@ -275,6 +385,35 @@ body {
             section.classList.remove('active');
         });
         document.getElementById(sectionId).classList.add('active');
+
+        // Hide sidebar on mobile view after selecting a section
+        if (window.innerWidth <= 768) {
+            document.querySelector('.sidebar').style.display = 'none';
+            document.querySelector('.close-button').style.display = 'none';
+            document.querySelector('.toggle-button').style.display = 'block';
+        }
+    }
+
+    function toggleSidebar() {
+        const sidebar = document.querySelector('.sidebar');
+        const closeButton = document.querySelector('.close-button');
+        const toggleButton = document.querySelector('.toggle-button');
+
+        if (sidebar.style.display === 'block') {
+            sidebar.style.display = 'none';
+            closeButton.style.display = 'none';
+            toggleButton.style.display = 'block';
+        } else {
+            sidebar.style.display = 'block';
+            closeButton.style.display = 'block';
+            toggleButton.style.display = 'none';
+        }
+    }
+
+    function closeSidebar() {
+        document.querySelector('.sidebar').style.display = 'none';
+        document.querySelector('.close-button').style.display = 'none';
+        document.querySelector('.toggle-button').style.display = 'block';
     }
 
     var dailyCallSummaryCtx = document.getElementById('dailyCallSummaryChart').getContext('2d');
@@ -289,7 +428,13 @@ body {
             }]
         },
         options: {
-            responsive: true
+            responsive: true,
+            maintainAspectRatio: false, // Added to ensure responsiveness
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
         }
     });
 
@@ -305,7 +450,13 @@ body {
             }]
         },
         options: {
-            responsive: true
+            responsive: true,
+            maintainAspectRatio: false, // Added to ensure responsiveness
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
         }
     });
 
@@ -321,7 +472,8 @@ body {
             }]
         },
         options: {
-            responsive: true
+            responsive: true,
+            maintainAspectRatio: false // Added to ensure responsiveness
         }
     });
 
@@ -337,7 +489,8 @@ body {
             }]
         },
         options: {
-            responsive: true
+            responsive: true,
+            maintainAspectRatio: false // Added to ensure responsiveness
         }
     });
 
@@ -353,7 +506,13 @@ body {
             }]
         },
         options: {
-            responsive: true
+            responsive: true,
+            maintainAspectRatio: false, // Added to ensure responsiveness
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
         }
     });
 
@@ -371,7 +530,13 @@ body {
             }]
         },
         options: {
-            responsive: true
+            responsive: true,
+            maintainAspectRatio: false, // Added to ensure responsiveness
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
         }
     });
 
