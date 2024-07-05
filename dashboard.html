@@ -320,7 +320,7 @@ body {
                 <h2>Daily Call Summary</h2>
                 <p>Total calls made: 150</p>
                 <p>Successful connections: 120</p>
-                <p>Voicemail left: 30</p>
+                <p>Not Answered: 30</p>
                 <div class="canvas-container">
                     <canvas id="dailyCallSummaryChart"></canvas>
                 </div>
@@ -341,17 +341,17 @@ body {
             <div id="call-outcomes" class="content-section">
                 <h2>Call Outcomes</h2>
                 <p>Uninterested leads: 10</p>
-                <p>Wrong numbers/disconnected calls: 5</p>
-                <p>Follow-up calls needed: 15</p>
+                <p>Transfered Calls: 5</p>
+                <p>Appointments Scheduled: 15</p>
                 <div class="canvas-container">
                     <canvas id="callOutcomesChart"></canvas>
                 </div>
             </div>
             <div id="lead-status" class="content-section">
                 <h2>Lead Status</h2>
-                <p>Converted to appointments: 30</p>
-                <p>Leads requiring immediate attention: 20</p>
-                <p>Yet to be contacted: 50</p>
+                <p>Qualified leads: 30</p>
+                <p>Unqualified leads: 20</p>
+                <p>Yet to be contacted(60,000): 1342</p>
                 <div class="canvas-container">
                     <canvas id="leadStatusChart"></canvas>
                 </div>
@@ -375,7 +375,7 @@ body {
                 </div>
             </div>
             <div id="performance-metrics" class="content-section">
-                <h2>Performance Metrics (per day)</h2>
+                <h2>Performance Metrics (calls made/day)</h2>
                 <p>Details about performance metrics go here.</p>
                 <div class="canvas-container">
                     <canvas id="performanceMetricsChart"></canvas>
@@ -395,7 +395,7 @@ function showRecordings(folderName) {
     
     switch(folderName) {
         case 'f1':
-            recordingsHTML += createAudioElement('1.mp3', 'Wednesday @ 01:16PM'),
+            recordingsHTML += createAudioElement('https://auth.vapi.ai/storage/v1/object/public/recordings/5845d9f6-09c2-4c9d-90d9-9c77a1918c8f-1720017518524-a53b196b-478d-4321-bf9c-351f8a2ee6fc-stereo.wav', 'Wednesday @ 01:16PM | Cost:$0.9 ($0.3/min)' ),
             recordingsHTML += createAudioElement('1.mp3', 'Wednesday @ 04:20PM'),
             recordingsHTML += createAudioElement('1.mp3', 'Recording 2'),
             recordingsHTML += createAudioElement('1.mp3', 'Recording 2'),
@@ -499,7 +499,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var dailyCallSummaryChart = new Chart(dailyCallSummaryCtx, {
         type: 'bar',
         data: {
-            labels: ['Total Calls Made', 'Successful Connections', 'Voicemail Left'],
+            labels: ['Total Calls Made', 'Successful Connections', 'Not Answered'],
             datasets: [{
                 label: 'Count',
                 data: [150, 120, 30],
@@ -521,7 +521,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var callOutcomesChart = new Chart(callOutcomesCtx, {
         type: 'bar',
         data: {
-            labels: ['Uninterested Leads', 'Wrong Numbers/Disconnected Calls', 'Follow-up Calls Needed'],
+            labels: ['Uninterested Leads', 'Transfered Calls', 'Appointments Scheduled'],
             datasets: [{
                 label: 'Count',
                 data: [10, 5, 15],
@@ -543,7 +543,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var leadStatusChart = new Chart(leadStatusCtx, {
         type: 'pie',
         data: {
-            labels: ['Converted to Appointments', 'Leads Requiring Immediate Attention', 'Yet to be Contacted'],
+            labels: ['Qualified leads', 'Unqualified leads', 'Yet to be Contacted(60,000)'],
             datasets: [{
                 label: 'Count',
                 data: [30, 20, 50],
