@@ -138,14 +138,19 @@ body {
     margin: 20px 0;
 }
 .video-container {
-    text-align: center;
-    padding: 20px;
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    height: 0;
+    overflow: hidden;
+    max-width: 100%;
 }
-.video-container video {
-    width: 80%;
-    height: auto;
-    border: 2px solid #000000;
-    border-radius: 10px;
+
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
 .note {
     position: absolute;
@@ -421,12 +426,9 @@ body {
         <button class="close-button" onclick="closeSidebar()" title="Close Sidebar">↓</button>
         <div class="main-content">
             <div id="demo-video" class="content-section active">
-                <h2>Demo Video</h2>
+                <h2>Onboarding Demo Video</h2>
                 <div class="video-container">
-                    <video controls>
-                        <source src="demo.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
+                    <iframe src="https://www.youtube.com/embed/LWvwn6NVkM0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                 </div>
             </div>
             <div id="daily-call-summary" class="content-section">
