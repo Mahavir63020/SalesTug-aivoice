@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SalesTug Dashboard</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.css">
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: #ffffff;
+    font-family: Arial, sans-serif;
+}
+.box {
+    position: relative;
+    width: 100%;
+    max-width: 1450px;
+    height: 650px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 20px;
+}
+.box::before {
+    content: '';
+    position: absolute;
+    top: -2.5px;
+    left: -2.5px;
+    right: -2.5px;
+    bottom: -2.5px;
+    background: linear-gradient(90deg, #a445b2, #fa4299);
+    border-radius: 10px;
+    z-index: -1;
+}
+.box span {
+    position: absolute;
+    inset: 4px;
+    background: rgb(255, 255, 255);
+    border-radius: 10px;
+    z-index: 1;
+}
+.sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100%;
+    background: #87ceeb;
+    color: #000000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    z-index: 2;
+    overflow-y: auto;
+    box-shadow: -10px 0px 20px rgba(0, 0, 0, 0.2);
+}
+.sidebar img {
+    width: 65px;
+    height: 65px;
+    margin-bottom: 20px;
+    border-radius: 50%;
+}
+.sidebar h2 {
+    margin-bottom: 20px;
+}
+.sidebar ul {
+    list-style-type: none;
+    width: 100%;
+}
+.sidebar ul li {
+    width: 100%;
+    margin-bottom: 10px;
+}
+.sidebar ul li .dashboard-box {
+    width: 100%;
+    padding: 15px;
+    background-color: #ffa500;
+    color: #ffffff;
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-size: 1rem;
+}
+.sidebar ul li .dashboard-box:hover {
+    background-color: #ffffff;
+    color: #000000;
+}
+.top-nav {
+    position: absolute;
+    top: 0;
+    left: 250px;
+    width: calc(100% - 250px);
+    height: 60px;
+    background: #ffa500;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    color: #ffffff;
+    border-top-right-radius: 10px;
+    z-index: 2;
+}
+.top-nav h2 {
+    margin-left: 10px;
+}
+.main-content {
+    position: absolute;
+    top: 60px;
+    left: 250px;
+    width: calc(100% - 250px);
+    height: calc(100% - 60px);
+    background: #ffffff;
+    padding: 20px;
+    overflow-y: auto;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+.content-section {
+    display: none;
+}
+.content-section.active {
+    display: block;
+}
+.canvas-container {
+    width: 100%;
+    height: 300px;
+    margin: 20px 0;
+}
+.video-container {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    height: 0;
+    overflow: hidden;
+    max-width: 100%;
+}
+
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.note {
+    position: absolute;
+    bottom: 1px;
+    width: 100%;
+    text-align: bottom;
+    font-size: 0.8rem;
+    color: grey;
+    padding: 10px;
+}
+.toggle-button {
+    display: none;
+    background-color: transparent;
+    color: #ffffff;
+    border: none;
+    padding: 10px;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+.close-button {
+    display: none;
+    position: absolute;
+    top: 15%;
+    left: 10px;
+    z-index: 3;
+    background-color: #ffa500;
+    border: none;
+    padding: 20px;
+    border-radius: 50%;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 1.5rem;
+    transform: rotate(90deg);
+}
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+        box-shadow: none;
+    }
+    .top-nav {
+        left: 0;
+        width: 100%;
+    }
+    .main-content {
+        left: 0;
+        width: 100%;
+    }
+    .toggle-button {
+        display: block;
+    }
+    .close-button {
+        position: fixed;
+        bottom: 10%;
+        right: 5%;
+        z-index: 1000;
+        background-color: #ffa500;
+        color: #01070a;
+        left: 90%;
+        border: none;
+        padding: 1px;
+        cursor: pointer;
+        font-size: 20px;
+        height: 40px;
+        width: 40px;
+        font-weight: bolder;
+    }
+    .canvas-container {
+        height: 250px;
+    }
+}
+.folder-button {
+    background-color: #87ceeb;
+    color: #000000;
+    border: none;
+    padding: 10px 15px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+}
+.folder-button:hover {
+    background-color: #ffa500;
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+#folder-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+.folder-button.active {
+    background-color: #ffa500;
+    color: #ffffff;
+}
+#recordings-container, #appointments-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.audio-container, .appointment-container {
+    background-color: #87ceeb;
+    color: #000000;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    width: 100%; /* Full width on mobile */
+}
+
+.audio-name, .appointment-name {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.audio-container audio {
+    width: 100%;
+}
+
+@media (min-width: 769px) {
+    .audio-container, .appointment-container {
+        width: calc(50% - 10px); /* Two columns on desktop with some space between */
+    }
+}
+
+#password-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    overflow: hidden;
+}
+
+#password-box {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    animation: levitate 3s ease-in-out infinite;
+}
+
+@keyframes levitate {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+#semi-liquid-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.semi-liquid {
+    position: absolute;
+    background: radial-gradient(circle, rgba(18, 194, 233, 0.4), rgba(196, 113, 237, 0.4), rgba(246, 79, 89, 0.4));
+    filter: blur(50px);
+    animation: liquidMove 10s infinite ease-in-out;
+}
+
+@keyframes liquidMove {
+    0%, 100% {
+        transform: translateY(0) translateX(0) scale(1);
+    }
+    25% {
+        transform: translateY(-10%) translateX(10%) scale(1.1);
+    }
+    50% {
+        transform: translateY(-20%) translateX(-20%) scale(1.2);
+    }
+    75% {
+        transform: translateY(10%) translateX(-10%) scale(1.1);
+    }
+}
+
+#password-box h2 {
+    color: #ffffff;
+    font-size: 28px;
+    margin-bottom: 20px;
+    text-shadow: 0 2px 5px rgba(255, 255, 255, 0.3);
+}
+
+#password-input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 50px;
+    background: rgba(52, 58, 64, 0.3);
+    color: #ffffff;
+    font-size: 16px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+#password-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+#password-input:focus {
+    background: rgba(52, 58, 64, 0.5);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+#password-submit {
+    padding: 12px 30px;
+    background: linear-gradient(45deg, #06beb6, #48b1bf);
+    color: #ffffff;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+}
+
+#password-submit:hover {
+    background: linear-gradient(45deg, #48b1bf, #06beb6);
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+
+
+</style>
+</head>
+<body>
+<div id="password-overlay">
+    <div id="semi-liquid-background">
+        <div class="semi-liquid" style="top: 0; left: 0; width: 50%; height: 50%;"></div>
+        <div class="semi-liquid" style="top: 50%; left: 50%; width: 75%; height: 75%;"></div>
+        <div class="semi-liquid" style="top: 25%; left: 75%; width: 60%; height: 60%;"></div>
+    </div>
+    <div id="password-box">
+        <h2>Enter Password</h2>
+        <input type="password" id="password-input">
+        <button id="password-submit">Submit</button>
+    </div>
+</div>
+
+<div class="box" style="display: none;">
+    <span>
+        <div class="sidebar">
+            <img src="logo.jpeg" alt="SalesTug Logo">
+            <h2>SalesTug Voice AI</h2>
+            <ul>
+                <li><div class="dashboard-box" onclick="showContent('demo-video')">Demo Video</div></li>
+                <li><div class="dashboard-box" onclick="showContent('daily-call-summary')">Daily Call Summary</div></li>
+                <li><div class="dashboard-box" onclick="showContent('call-recordings')">Call Recordings</div></li>
+                <li><div class="dashboard-box" onclick="showContent('call-outcomes')">Call Outcomes</div></li>
+                <li><div class="dashboard-box" onclick="showContent('lead-status')">Lead Status</div></li>
+                <li><div class="dashboard-box" onclick="showContent('response-rate')">Response Rate</div></li>
+                <li><div class="dashboard-box" onclick="showContent('appointments-scheduled')">Appointments Scheduled</div></li>
+                <li><div class="dashboard-box" onclick="showContent('performance-metrics')">Performance Metrics</div></li>
+            </ul>
+        </div>
+        <div class="top-nav">
+            <button class="toggle-button" onclick="toggleSidebar()">☰</button>
+            <h2>Dashboard</h2>
+        </div>
+        <button class="close-button" onclick="closeSidebar()" title="Close Sidebar">↓</button>
+        <div class="main-content">
+            <div id="demo-video" class="content-section active">
+                <h2>Onboarding Demo Video</h2>
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/LWvwn6NVkM0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            </div>
+            <div id="daily-call-summary" class="content-section">
+                <h2>Daily Call Summary</h2>
+                <p>Total calls made: 150</p>
+                <p>Successful connections: 120</p>
+                <p>Not Answered: 30</p>
+                <div class="canvas-container">
+                    <canvas id="dailyCallSummaryChart"></canvas>
+                </div>
+            </div>
+            <div id="call-recordings" class="content-section">
+                <h2>Call Recordings</h2>
+                <div id="folder-buttons">
+                    <button class="folder-button" onclick="showRecordings('f1')">03-07-2024 (Wednesday)</button>
+                    <button class="folder-button" onclick="showRecordings('f2')">04-07-2024 (Thursday)</button>
+                    <button class="folder-button" onclick="showRecordings('f3')">05-07-2024 (Friday)</button>
+                    <button class="folder-button" onclick="showRecordings('f4')">08-07-2024 (Monday)</button>
+                    <button class="folder-button" onclick="showRecordings('f5')">09-07-2024 (Tuesday)</button>
+                </div>
+                <div id="recordings-container">
+                    <!-- Container to display recordings dynamically -->
+                </div>
+            </div>
+            <div id="call-outcomes" class="content-section">
+                <h2>Call Outcomes</h2>
+                <p>Uninterested leads: 10</p>
+                <p>Transfered Calls: 5</p>
+                <p>Appointments Scheduled: 15</p>
+                <div class="canvas-container">
+                    <canvas id="callOutcomesChart"></canvas>
+                </div>
+            </div>
+            <div id="lead-status" class="content-section">
+                <h2>Lead Status</h2>
+                <p>Qualified leads: 30</p>
+                <p>Unqualified leads: 20</p>
+                <p>Yet to be contacted(60,000): 1342</p>
+                <div class="canvas-container">
+                    <canvas id="leadStatusChart"></canvas>
+                </div>
+            </div>
+            <div id="response-rate" class="content-section">
+                <h2>Response Rate</h2>
+                <p>Percentage of calls answered: 80%</p>
+                <p>Percentage of calls resulting in a conversation: 75%</p>
+                <p>Percentage of calls leading to a positive outcome: 60%</p>
+                <div class="canvas-container">
+                    <canvas id="responseRateChart"></canvas>
+                </div>
+            </div>
+            <div id="appointments-scheduled" class="content-section">
+                <h2>Appointments Scheduled</h2>
+                <div id="folder-buttons">
+                    <button class="folder-button" onclick="showAppointments('as1')">03-07-2024 (Wednesday)</button>
+                    <button class="folder-button" onclick="showAppointments('as2')">04-07-2024 (Thursday)</button>
+                    <button class="folder-button" onclick="showAppointments('as3')">05-07-2024 (Friday)</button>
+                    <button class="folder-button" onclick="showAppointments('as4')">08-07-2024 (Monday)</button>
+                    <button class="folder-button" onclick="showAppointments('as5')">09-07-2024 (Tuesday)</button>
+                </div>
+                <div id="appointments-container">
+                    <!-- Container to display appointments dynamically -->
+                </div>
+                <div class="canvas-container">
+                    <canvas id="appointmentSchedulingChart"></canvas>
+                </div>
+            </div>
+            <div id="performance-metrics" class="content-section">
+                <h2>Performance Metrics (calls made/day)</h2>
+                <p>Details about performance metrics go here.</p>
+                <div class="canvas-container">
+                    <canvas id="performanceMetricsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </span>
+    <div class="note">
+        Note: This dashboard will be updated day by day.
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <script>
+    // Password protection
+    const correctPassword = "Salestug";
+    const passwordOverlay = document.getElementById('password-overlay');
+    const passwordInput = document.getElementById('password-input');
+    const passwordSubmit = document.getElementById('password-submit');
+    const dashboardContent = document.querySelector('.box');
+    
+    passwordSubmit.addEventListener('click', checkPassword);
+    passwordInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            checkPassword();
+        }
+    });
+    
+    function checkPassword() {
+        if (passwordInput.value === correctPassword) {
+            passwordOverlay.style.display = 'none';
+            dashboardContent.style.display = 'block';
+        } else {
+            alert('Incorrect password. Please try again.');
+            passwordInput.value = '';
+        }
+    }
+    
+    function showRecordings(folderName) {
+        let recordingsHTML = ``;
+        
+        switch(folderName) {
+            case 'f1':
+                recordingsHTML += createAudioElement('https://auth.vapi.ai/storage/v1/object/public/recordings/5845d9f6-09c2-4c9d-90d9-9c77a1918c8f-1720017518524-a53b196b-478d-4321-bf9c-351f8a2ee6fc-stereo.wav', 'Wednesday @ 01:16PM | Cost:$0.9 ($0.3/min)');
+                recordingsHTML += createAudioElement('1.mp3', 'Wednesday @ 04:20PM');
+                recordingsHTML += createAudioElement('1.mp3', 'Recording 2');
+                recordingsHTML += createAudioElement('1.mp3', 'Recording 3');
+                recordingsHTML += createAudioElement('1.mp3', 'Recording 4');
+                recordingsHTML += createAudioElement('1.mp3', 'Recording 5');
+                break;
+            case 'f2':
+                recordingsHTML += createAudioElement('1.mp3', 'Recording 1');
+                recordingsHTML += createAudioElement('1.mp3', 'Recording 2');
+                recordingsHTML += createAudioElement('1.mp3', 'Recording 3');
+                recordingsHTML += createAudioElement('1.mp3', 'Recording 4');
+                recordingsHTML += createAudioElement('1.mp3', 'Recording 5');
+                break;
+            case 'f3':
+                recordingsHTML += createAudioElement('1.mp3', 'Recording 1');
+                recordingsHTML += createAudioElement('1.mp3', 'Recording 2');
+                recordingsHTML += createAudioElement('1.mp3', 'Recording 3');
+                break;
+            case 'f4':
+                recordingsHTML += createAudioElement('1.mp3', 'Recording 1');
+                recordingsHTML += createAudioElement('1.mp3', 'Recording 2');
+                recordingsHTML += createAudioElement('1.mp3', 'Recording 3');
+                recordingsHTML += createAudioElement('1.mp3', 'Recording 4');
+                break;
+            case 'f5':
+                recordingsHTML += createAudioElement('1.mp3', 'Recording 1');
+                recordingsHTML += createAudioElement('1.mp3', 'Recording 2');
+                break;
+            default:
+                recordingsHTML += '<p>No recordings available for this day.</p>';
+        }
+        
+        document.getElementById('recordings-container').innerHTML = recordingsHTML;
+    }
+    
+    function createAudioElement(src, name) {
+        return `
+            <div class="audio-container">
+                <p class="audio-name">${name}</p>
+                <audio controls>
+                    <source src="${src}" type="audio/mp3">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+        `;
+    }
+    
+    function showAppointments(folderName) {
+        let appointmentsHTML = ``;
+        
+        switch(folderName) {
+            case 'as1':
+                appointmentsHTML += createAppointmentElement('John Doe', '10:00 AM', 'Sales Call', 'john.doe@gmail.com', '555-123-4567');
+                appointmentsHTML += createAppointmentElement('Jane Smith', '2:30 PM', 'Product Demo', 'jane.smith@gmail.com', '555-234-5678');
+                appointmentsHTML += createAppointmentElement('Bob Johnson', '4:45 PM', 'Follow-up', 'bob.johnson@gmail.com', '555-345-6789');
+                break;
+            case 'as2':
+                appointmentsHTML += createAppointmentElement('Alice Brown', '9:15 AM', 'Initial Consultation', 'alice.brown@gmail.com', '555-456-7890');
+                appointmentsHTML += createAppointmentElement('Charlie Davis', '1:00 PM', 'Contract Signing', 'charlie.davis@gmail.com', '555-567-8901');
+                break;
+            case 'as3':
+                appointmentsHTML += createAppointmentElement('Eva White', '11:30 AM', 'Sales Pitch', 'eva.white@gmail.com', '555-678-9012');
+                appointmentsHTML += createAppointmentElement('Frank Miller', '3:45 PM', 'Product Showcase', 'frank.miller@gmail.com', '555-789-0123');
+                appointmentsHTML += createAppointmentElement('Grace Lee', '5:00 PM', 'Q&A Session', 'grace.lee@gmail.com', '555-890-1234');
+                break;
+            case 'as4':
+                appointmentsHTML += createAppointmentElement('Henry Wilson', '10:45 AM', 'Introductory Call', 'henry.wilson@gmail.com', '555-901-2345');
+                appointmentsHTML += createAppointmentElement('Ivy Taylor', '2:15 PM', 'Feature Presentation', 'ivy.taylor@gmail.com', '555-012-3456');
+                break;
+            case 'as5':
+                appointmentsHTML += createAppointmentElement('Jack Anderson', '9:30 AM', 'Sales Meeting', 'jack.anderson@gmail.com', '555-123-4567');
+                appointmentsHTML += createAppointmentElement('Kelly Martin', '1:30 PM', 'Product Training', 'kelly.martin@gmail.com', '555-234-5678');
+                appointmentsHTML += createAppointmentElement('Liam Harris', '4:00 PM', 'Closing Deal', 'liam.harris@gmail.com', '555-345-6789');
+                break;
+            default:
+                appointmentsHTML += '<p>No appointments scheduled for this day.</p>';
+        }
+        
+        document.getElementById('appointments-container').innerHTML = appointmentsHTML;
+    }
+    
+    function createAppointmentElement(name, time, description, email, phone) {
+        return `
+            <div class="appointment-container">
+                <p class="appointment-name">${name}</p>
+                <p>${time} - ${description}</p>
+                <p>Email: ${email}</p>
+                <p>Phone: ${phone}</p>
+            </div>
+        `;
+    }
+    
+    function showContent(sectionId) {
+        const sections = document.querySelectorAll('.content-section');
+        sections.forEach(section => {
+            section.classList.remove('active');
+        });
+        document.getElementById(sectionId).classList.add('active');
+    
+        if (window.innerWidth <= 768) {
+            document.querySelector('.sidebar').style.display = 'none';
+            document.querySelector('.close-button').style.display = 'none';
+        }
+    }
+    
+    function toggleSidebar() {
+        const sidebar = document.querySelector('.sidebar');
+        const closeButton = document.querySelector('.close-button');
+    
+        if (sidebar.style.display === 'block') {
+            sidebar.style.display = 'none';
+            closeButton.style.display = 'none';
+        } else {
+            sidebar.style.display = 'block';
+            closeButton.style.display = 'block';
+        }
+    }
+    
+    function closeSidebar() {
+        document.querySelector('.sidebar').style.display = 'none';
+        document.querySelector('.close-button').style.display = 'none';
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        var dailyCallSummaryCtx = document.getElementById('dailyCallSummaryChart').getContext('2d');
+        var dailyCallSummaryChart = new Chart(dailyCallSummaryCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Total Calls Made', 'Successful Connections', 'Not Answered'],
+                datasets: [{
+                    label: 'Count',
+                    data: [150, 120, 30],
+                    backgroundColor: ['#4682B4', '#FFA07A', '#808080']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    
+        var callOutcomesCtx = document.getElementById('callOutcomesChart').getContext('2d');
+        var callOutcomesChart = new Chart(callOutcomesCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Uninterested Leads', 'Transfered Calls', 'Appointments Scheduled'],
+                datasets: [{
+                    label: 'Count',
+                    data: [10, 5, 15],
+                    backgroundColor: ['#4682B4', '#FFA07A', '#808080']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    
+        var leadStatusCtx = document.getElementById('leadStatusChart').getContext('2d');
+        var leadStatusChart = new Chart(leadStatusCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Qualified leads', 'Unqualified leads', 'Yet to be Contacted(60,000)'],
+                datasets: [{
+                    label: 'Count',
+                    data: [30, 20, 50],
+                    backgroundColor: ['#4682B4', '#FFA07A', '#808080']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+            }
+        });
+    
+        var responseRateCtx = document.getElementById('responseRateChart').getContext('2d');
+        var responseRateChart = new Chart(responseRateCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Calls Answered', 'Calls Resulting in Conversation', 'Calls Leading to Positive Outcome'],
+                datasets: [{
+                    label: 'Percentage',
+                    data: [80, 75, 60],
+                    backgroundColor: ['#4682B4', '#FFA07A', '#808080']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+            }
+        });
+    
+        var appointmentSchedulingCtx = document.getElementById('appointmentSchedulingChart').getContext('2d');
+        var appointmentSchedulingChart = new Chart(appointmentSchedulingCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Appointments Scheduled', 'Scheduled Appointments Details', 'AI-made Appointments'],
+                datasets: [{
+                    label: 'Count',
+                    data: [20, 10, 5],
+                    backgroundColor: ['#4682B4', '#FFA07A', '#808080']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+            }
+        });
+    
+        var performanceMetricsCtx = document.getElementById('performanceMetricsChart').getContext('2d');
+        var performanceMetricsChart = new Chart(performanceMetricsCtx, {
+            type: 'line',
+            data: {
+                labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
+                datasets: [{
+                    label: 'Performance Metrics',
+                    data: [10, 20, 15, 25, 30, 22, 28],
+                    backgroundColor: 'rgba(70, 130, 180, 0.2)',
+                    borderColor: '#4682B4',  
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+    
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) {
+            document.querySelector('.sidebar').style.display = 'block';
+            document.querySelector('.close-button').style.display = 'none';
+        } else {
+            document.querySelector('.sidebar').style.display = 'none';
+            document.querySelector('.close-button').style.display = 'none';
+        }
+    });
+    </script>
+    </body>
+    </html>
