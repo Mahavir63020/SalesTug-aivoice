@@ -293,7 +293,6 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -301,7 +300,18 @@ body {
     overflow: hidden;
 }
 
+spline-viewer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
 #password-box {
+    position: relative;
+    z-index: 2;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     border-radius: 20px;
@@ -314,38 +324,6 @@ body {
 @keyframes levitate {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-20px); }
-}
-
-#semi-liquid-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    z-index: -1;
-}
-
-.semi-liquid {
-    position: absolute;
-    background: radial-gradient(circle, rgba(18, 194, 233, 0.4), rgba(196, 113, 237, 0.4), rgba(246, 79, 89, 0.4));
-    filter: blur(50px);
-    animation: liquidMove 10s infinite ease-in-out;
-}
-
-@keyframes liquidMove {
-    0%, 100% {
-        transform: translateY(0) translateX(0) scale(1);
-    }
-    25% {
-        transform: translateY(-10%) translateX(10%) scale(1.1);
-    }
-    50% {
-        transform: translateY(-20%) translateX(-20%) scale(1.2);
-    }
-    75% {
-        transform: translateY(10%) translateX(-10%) scale(1.1);
-    }
 }
 
 #password-box h2 {
@@ -397,17 +375,12 @@ body {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
-
-
 </style>
 </head>
 <body>
 <div id="password-overlay">
-    <div id="semi-liquid-background">
-        <div class="semi-liquid" style="top: 0; left: 0; width: 50%; height: 50%;"></div>
-        <div class="semi-liquid" style="top: 50%; left: 50%; width: 75%; height: 75%;"></div>
-        <div class="semi-liquid" style="top: 25%; left: 75%; width: 60%; height: 60%;"></div>
-    </div>
+    <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.6/build/spline-viewer.js"></script>
+    <spline-viewer url="https://prod.spline.design/5yclWgA1n5PUFox6/scene.splinecode"></spline-viewer>
     <div id="password-box">
         <h2>Enter Password</h2>
         <input type="password" id="password-input">
