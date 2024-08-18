@@ -418,9 +418,9 @@ spline-viewer {
             </div>
             <div id="daily-call-summary" class="content-section">
                 <h2>Daily Call Summary</h2>
-                <p>Total calls made: 150</p>
-                <p>Successful connections: 120</p>
-                <p>Not Answered: 30</p>
+                <p data-total-calls>Total calls made: 150</p>
+                <p data-successful-connections>Successful connections: 120</p>
+                <p data-not-answered>Not Answered: 30</p>
                 <div class="canvas-container">
                     <canvas id="dailyCallSummaryChart"></canvas>
                 </div>
@@ -440,27 +440,27 @@ spline-viewer {
             </div>
             <div id="call-outcomes" class="content-section">
                 <h2>Call Outcomes</h2>
-                <p>Uninterested leads: 10</p>
-                <p>Transfered Calls: 5</p>
-                <p>Appointments Scheduled: 15</p>
+                <p data-uninterested-leads>Uninterested leads: 10</p>
+                <p data-transfered-calls>Transfered Calls: 5</p>
+                <p data-appointments-scheduled>Appointments Scheduled: 15</p>
                 <div class="canvas-container">
                     <canvas id="callOutcomesChart"></canvas>
                 </div>
             </div>
             <div id="lead-status" class="content-section">
                 <h2>Lead Status</h2>
-                <p>Qualified leads: 30</p>
-                <p>Unqualified leads: 20</p>
-                <p>Yet to be contacted(60,000): 1342</p>
+                <p data-qualified-leads>Qualified leads: 30</p>
+                <p data-unqualified-leads>Unqualified leads: 20</p>
+                <p data-yet-to-be-contacted>Yet to be contacted(60,000): 1342</p>
                 <div class="canvas-container">
                     <canvas id="leadStatusChart"></canvas>
                 </div>
             </div>
             <div id="response-rate" class="content-section">
                 <h2>Response Rate</h2>
-                <p>Percentage of calls answered: 80%</p>
-                <p>Percentage of calls resulting in a conversation: 75%</p>
-                <p>Percentage of calls leading to a positive outcome: 60%</p>
+                <p data-calls-answered>Percentage of calls answered: 80</p>
+                <p data-calls-conversation>Percentage of calls resulting in a conversation: 75</p>
+                <p data-calls-positive-outcome>Percentage of calls leading to a positive outcome: 60</p>
                 <div class="canvas-container">
                     <canvas id="responseRateChart"></canvas>
                 </div>
@@ -487,14 +487,24 @@ spline-viewer {
                 <div class="canvas-container">
                     <canvas id="performanceMetricsChart"></canvas>
                 </div>
+                <div id="performance-data" style="display: none;">
+                    <span data-day1>10</span>
+                    <span data-day2>20</span>
+                    <span data-day3>15</span>
+                    <span data-day4>25</span>
+                    <span data-day5>30</span>
+                    <span data-day6>22</span>
+                    <span data-day7>28</span>
+                </div>
             </div>
         </div>
     </span>
     <div class="note">
         Note: This dashboard will be updated day by day.
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
-    <script>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+<script>
     // Password protection
     const correctPassword = "SalesTug";
     const passwordOverlay = document.getElementById('password-overlay');
@@ -649,6 +659,11 @@ spline-viewer {
     }
     
     document.addEventListener('DOMContentLoaded', function() {
+        function getValueFromElement(selector) {
+            const element = document.querySelector(selector);
+            return parseInt(element.textContent.match(/\d+/)[0]);
+        }
+
         var dailyCallSummaryCtx = document.getElementById('dailyCallSummaryChart').getContext('2d');
         var dailyCallSummaryChart = new Chart(dailyCallSummaryCtx, {
             type: 'bar',
@@ -656,7 +671,11 @@ spline-viewer {
                 labels: ['Total Calls Made', 'Successful Connections', 'Not Answered'],
                 datasets: [{
                     label: 'Count',
-                    data: [150, 120, 30],
+                    data: [
+                        getValueFromElement('#daily-call-summary [data-total-calls]'),
+                        getValueFromElement('#daily-call-summary [data-successful-connections]'),
+                        getValueFromElement('#daily-call-summary [data-not-answered]')
+                    ],
                     backgroundColor: ['#4682B4', '#FFA07A', '#808080']
                 }]
             },
@@ -670,7 +689,7 @@ spline-viewer {
                 }
             }
         });
-    
+
         var callOutcomesCtx = document.getElementById('callOutcomesChart').getContext('2d');
         var callOutcomesChart = new Chart(callOutcomesCtx, {
             type: 'bar',
@@ -678,7 +697,11 @@ spline-viewer {
                 labels: ['Uninterested Leads', 'Transfered Calls', 'Appointments Scheduled'],
                 datasets: [{
                     label: 'Count',
-                    data: [10, 5, 15],
+                    data: [
+                        getValueFromElement('#call-outcomes [data-uninterested-leads]'),
+                        getValueFromElement('#call-outcomes [data-transfered-calls]'),
+                        getValueFromElement('#call-outcomes [data-appointments-scheduled]')
+                    ],
                     backgroundColor: ['#4682B4', '#FFA07A', '#808080']
                 }]
             },
@@ -692,7 +715,7 @@ spline-viewer {
                 }
             }
         });
-    
+
         var leadStatusCtx = document.getElementById('leadStatusChart').getContext('2d');
         var leadStatusChart = new Chart(leadStatusCtx, {
             type: 'pie',
@@ -700,7 +723,11 @@ spline-viewer {
                 labels: ['Qualified leads', 'Unqualified leads', 'Yet to be Contacted(60,000)'],
                 datasets: [{
                     label: 'Count',
-                    data: [30, 20, 50],
+                    data: [
+                        getValueFromElement('#lead-status [data-qualified-leads]'),
+                        getValueFromElement('#lead-status [data-unqualified-leads]'),
+                        getValueFromElement('#lead-status [data-yet-to-be-contacted]')
+                    ],
                     backgroundColor: ['#4682B4', '#FFA07A', '#808080']
                 }]
             },
@@ -709,7 +736,7 @@ spline-viewer {
                 maintainAspectRatio: false,
             }
         });
-    
+
         var responseRateCtx = document.getElementById('responseRateChart').getContext('2d');
         var responseRateChart = new Chart(responseRateCtx, {
             type: 'pie',
@@ -717,7 +744,11 @@ spline-viewer {
                 labels: ['Calls Answered', 'Calls Resulting in Conversation', 'Calls Leading to Positive Outcome'],
                 datasets: [{
                     label: 'Percentage',
-                    data: [80, 75, 60],
+                    data: [
+                        getValueFromElement('#response-rate [data-calls-answered]'),
+                        getValueFromElement('#response-rate [data-calls-conversation]'),
+                        getValueFromElement('#response-rate [data-calls-positive-outcome]')
+                    ],
                     backgroundColor: ['#4682B4', '#FFA07A', '#808080']
                 }]
             },
@@ -726,7 +757,7 @@ spline-viewer {
                 maintainAspectRatio: false,
             }
         });
-    
+
         var appointmentSchedulingCtx = document.getElementById('appointmentSchedulingChart').getContext('2d');
         var appointmentSchedulingChart = new Chart(appointmentSchedulingCtx, {
             type: 'pie',
@@ -743,7 +774,7 @@ spline-viewer {
                 maintainAspectRatio: false,
             }
         });
-    
+
         var performanceMetricsCtx = document.getElementById('performanceMetricsChart').getContext('2d');
         var performanceMetricsChart = new Chart(performanceMetricsCtx, {
             type: 'line',
@@ -751,7 +782,15 @@ spline-viewer {
                 labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
                 datasets: [{
                     label: 'Performance Metrics',
-                    data: [10, 20, 15, 25, 30, 22, 28],
+                    data: [
+                        getValueFromElement('#performance-data [data-day1]'),
+                        getValueFromElement('#performance-data [data-day2]'),
+                        getValueFromElement('#performance-data [data-day3]'),
+                        getValueFromElement('#performance-data [data-day4]'),
+                        getValueFromElement('#performance-data [data-day5]'),
+                        getValueFromElement('#performance-data [data-day6]'),
+                        getValueFromElement('#performance-data [data-day7]')
+                    ],
                     backgroundColor: 'rgba(70, 130, 180, 0.2)',
                     borderColor: '#4682B4',  
                     borderWidth: 2
@@ -778,6 +817,6 @@ spline-viewer {
             document.querySelector('.close-button').style.display = 'none';
         }
     });
-    </script>
-    </body>
-    </html>
+</script>
+</body>
+</html>
