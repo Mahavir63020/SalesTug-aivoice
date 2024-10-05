@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SalesTug Voice AI Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            transition: background-color 0.3s ease-in-out;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        :root {
+            --bg-color: #f0f4f8;
+            --sidebar-bg: #00a8e8;
+            --header-bg: #ff6347;
+            --button-bg: linear-gradient(45deg, #ff416c, #ff4b2b);
+            --button-hover-bg: linear-gradient(45deg, #1dd1a1, #10ac84);
+            --text-color: #333;
+            --icon-color: #fff;
+            --box-bg: #ffffff;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1c1c1e;
+            --sidebar-bg: #2c3e50;
+            --header-bg: #2d3436;
+            --button-bg: linear-gradient(45deg, #9b59b6, #8e44ad);
+            --button-hover-bg: linear-gradient(45deg, #3498db, #2980b9);
+            --text-color: #ecf0f1;
+            --icon-color: #ffffff;
+            --box-bg: #2c3e50;
+            --box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: var(--sidebar-bg);
+            padding: 20px;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            overflow-y: auto;
+        }
+
+        .sidebar.minimized {
+            width: 80px;
+        }
+
+        .sidebar .logo-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .sidebar .logo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar .company-name {
+            color: white;
+            margin-top: 10px;
+            font-size: 24px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.minimized .logo {
+            width: 50px;
+            height: 50px;
+        }
+
+        .sidebar.minimized .company-name {
+            display: none;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .sidebar ul li {
+            margin: 5px 0;
+        }
+
+        .sidebar ul li button {
+            width: 100%;
+            padding: 18px;
+            background: var(--button-bg);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease, transform 0.2s ease;
+            text-align: center;
+            min-height: 60px;
+        }
+
+        .sidebar ul li button i {
+            margin-right: 10px;
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.minimized ul li button {
+            justify-content: center;
+            padding: 15px;
+        }
+
+        .sidebar.minimized ul li button i {
+            margin-right: 0;
+        }
+
+        .sidebar.minimized ul li button span {
+            display: none;
+        }
+
+        .sidebar ul li button:hover {
+            background: var(--button-hover-bg);
+            transform: scale(1.05);
+        }
+
+        .main-content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            transition: margin-left 0.3s ease;
+        }
+
+        header {
+            background: var(--header-bg);
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-toggle {
+            background: transparent;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .sidebar-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .dashboard-title {
+            font-size: 24px;
+            font-weight: bold;
+            flex-grow: 1;
+        }
+
+        .top-nav-buttons {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .top-nav-buttons button {
+            background: transparent;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
+            font-size: 20px;
+        }
+
+        .top-nav-buttons button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .top-nav-buttons img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            color: var(--text-color);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-box {
+            background-color: var(--box-bg);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--box-shadow);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-content {
+            display: none;
+            flex: 1;
+        }
+
+        .section-content.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .call-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .call-item {
+            background-color: var(--box-bg);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            padding: 15px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .call-item h3 {
+            margin-bottom: 10px;
+        }
+
+        .call-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .call-detail {
+            background-color: rgba(0, 0, 0, 0.05);
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .call-detail strong {
+            font-weight: 600;
+        }
+
+        @media screen and (max-width: 768px) {
+            .sidebar {
+                width: 80px;
+            }
+
+            .sidebar .company-name,
+            .sidebar ul li button span {
+                display: none;
+            }
+
+            .sidebar .logo {
+                width: 50px;
+                height: 50px;
+            }
+
+            .sidebar ul li button {
+                justify-content: center;
+                padding: 15px;
+            }
+
+            .sidebar ul li button i {
+                margin-right: 0;
+            }
+
+            .sidebar.expanded {
+                width: 300px;
+            }
+
+            .sidebar.expanded .company-name,
+            .sidebar.expanded ul li button span {
+                display: block;
+            }
+
+            .sidebar.expanded .logo {
+                width: 100px;
+                height: 100px;
+            }
+
+            .sidebar.expanded ul li button {
+                justify-content: center;
+                padding: 18px;
+            }
+
+            .sidebar.expanded ul li button i {
+                margin-right: 10px;
+            }
+
+            .dashboard-title {
+                font-size: 18px;
+            }
+        }
+
+        .call-folder {
+    background-color: var(--box-bg);
+    border-radius: 12px;
+    margin-bottom: 15px;
+    padding: 20px;
+    box-shadow: var(--box-shadow);
+    transition: all 0.3s ease;
+}
+
+.call-folder:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.call-folder h3 {
+    cursor: pointer;
+    color: var(--primary-color);
+    transition: color 0.3s ease;
+}
+
+.call-folder h3:hover {
+    color: var(--secondary-color);
+}
+
+.call-list {
+    display: none;
+    list-style-type: none;
+    padding: 0;
+}
+
+.call-item {
+    background-color: var(--bg-color);
+    border-radius: 8px;
+    margin-top: 15px;
+    padding: 15px;
+    transition: all 0.3s ease;
+}
+
+.call-item:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.call-header {
+    background-color: #3498DB;
+    color: white;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.call-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.call-detail {
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 10px;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+}
+
+.call-detail:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.call-player {
+    width: 100%;
+    margin-top: 15px;
+}
+
+.show {
+    display: block;
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.preview-modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+    animation: fadeIn 0.3s;
+}
+
+.preview-content {
+    background-color: var(--box-bg);
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 12px;
+    width: 80%;
+    max-width: 700px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.close-preview {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-preview:hover {
+    color: var(--text-color);
+}
+
+.preview-title {
+    margin-bottom: 15px;
+    color: var(--primary-color);
+}
+
+.preview-text {
+    white-space: pre-wrap;
+    line-height: 1.6;
+}
+.call-list-container {
+            display: none;
+        }
+
+        .pagination-controls {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.page-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px;
+    margin: 5px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.page-button.active {
+    background-color: #0056b3;
+}
+
+.page-button:hover {
+    background-color: #0056b3;
+}
+
+        .canvas-container {
+    position: relative;
+    height: 300px; /* Set a flexible height */
+    width: 100%; /* Chart will take full width */
+}
+
+@media screen and (max-width: 768px) {
+    .canvas-container {
+        height: 200px; /* Adjust height for smaller screens */
+    }
+}
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="logo-container">
+                <img src="logo.jpeg" alt="Logo" class="logo">
+                <div class="company-name">SalesTug Voice AI</div>
+            </div>
+            <ul>
+                <li><button onclick="showSection('daily-call-summary')"><i class="fas fa-phone-alt"></i><span>Daily Call Summary</span></button></li>
+                <li><button onclick="showSection('call-recordings')"><i class="fas fa-microphone"></i><span>Call Recordings</span></button></li>
+                <li><button onclick="showSection('call-outcomes')"><i class="fas fa-file-alt"></i><span>Call Outcomes</span></button></li>
+                <li><button onclick="showSection('lead-status')"><i class="fas fa-chart-line"></i><span>Lead Status</span></button></li>
+                <li><button onclick="showSection('response-rate')"><i class="fas fa-percentage"></i><span>Response Rate</span></button></li>
+                <li><button onclick="showSection('appointments-scheduled')"><i class="fas fa-calendar-alt"></i><span>Appointments Scheduled</span></button></li>
+                <li><button onclick="showSection('performance-metrics')"><i class="fas fa-tachometer-alt"></i><span>Performance Metrics</span></button></li>
+            </ul>
+        </div>
+
+        <div class="main-content-wrapper">
+            <header>
+                <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                <div class="dashboard-title">Dashboard</div>
+                <div class="top-nav-buttons">
+                    <button onclick="toggleTheme()"><i class="fas fa-adjust"></i></button>
+                    <img src="exit realty.jpeg" alt="Logo">
+                </div>
+            </header>
+
+            <div class="main-content">
+                <div id="daily-call-summary" class="content-box section-content active">
+                    <h2>Daily Call Summary</h2>
+                    <p data-total-calls="180">Total calls made: <span id="total-calls">180</span></p>
+                    <p data-successful-connections="120">Successful connections: <span id="successful-connections">120</span></p>
+                    <p data-not-answered="30">Not Answered: <span id="not-answered">30</span></p>
+                    <div class="canvas-container">
+                        <canvas id="dailyCallSummaryChart"></canvas>
+                    </div>
+                </div>
+                <div id="call-recordings" class="content-box section-content">
+                    <h2>Call Recordings</h2>
+                    <div id="call-folders"></div>
+                
+                    <!-- Pagination Controls -->
+                    <div id="pagination-controls" class="pagination-controls"></div> <!-- Pagination goes here -->
+                </div>
+                
+                <!-- Modal for showing previews -->
+                <div id="preview-modal" class="preview-modal">
+                    <div class="preview-content">
+                        <span class="close-preview">&times;</span>
+                        <h3 id="preview-title" class="preview-title"></h3>
+                        <pre id="preview-text" class="preview-text"></pre>
+                    </div>
+                </div>
+                
+                <div id="call-outcomes" class="content-box section-content">
+                    <h2>Call Outcomes</h2>
+                    <p data-uninterested-leads>Uninterested leads: <span id="uninterested-leads">10</span></p>
+                    <p data-transfered-calls>Transferred Calls: <span id="transferred-calls">5</span></p>
+                    <p data-appointments-scheduled>Appointments Scheduled: <span id="appointments-scheduled">15</span></p>
+                    <div class="canvas-container">
+                        <canvas id="callOutcomesChart"></canvas>
+                    </div>
+                </div>
+                <div id="lead-status" class="content-box section-content">
+                    <h2>Lead Status</h2>
+                    <p data-qualified-leads>Qualified leads: <span id="qualified-leads">30</span></p>
+                    <p data-unqualified-leads>Unqualified leads: <span id="unqualified-leads">20</span></p>
+                    <p data-yet-to-contact>Yet to be contacted (60,000): <span id="yet-to-contact">1342</span></p>
+                    
+                    <div class="canvas-container">
+                        <canvas id="leadStatusChart"></canvas>
+                    </div>
+                </div>                
+                <div id="response-rate" class="content-box section-content">
+                    <h2>Response Rate</h2>
+                    <p data-calls-answered>Percentage of calls answered: <span id="calls-answered">80</span>%</p>
+                    <p data-calls-conversation>Percentage of calls resulting in a conversation: <span id="calls-conversation">75</span>%</p>
+                    <p data-positive-outcome>Percentage of calls leading to a positive outcome: <span id="positive-outcome">60</span>%</p>
+                
+                    <div class="canvas-container">
+                        <canvas id="responseRateChart"></canvas>
+                    </div>
+                </div>
+                
+                <div id="appointments-scheduled" class="content-box section-content">
+                    <h2>Appointments Scheduled</h2>
+                    <p>View and manage your scheduled appointments.</p>
+                </div>
+                <div id="performance-metrics" class="content-box section-content">
+                    <h2>Performance Metrics (calls made/day)</h2>
+                    <p data-calls-made="180">Calls made per day: <span id="calls-made">180</span></p>
+                    
+                    <div class="canvas-container">
+                        <canvas id="performanceMetricsChart"></canvas>
+                    </div>
+                </div>
+                
+          </div>
+      </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+      function toggleSidebar() {
+          const sidebar = document.querySelector('.sidebar');
+          sidebar.classList.toggle('minimized');
+      }
+
+      function toggleTheme() {
+          const body = document.body;
+          body.dataset.theme = body.dataset.theme === 'dark' ? '' : 'dark';
+      }
+
+      function showSection(sectionId) {
+          const sections = document.querySelectorAll('.section-content');
+          sections.forEach(section => section.classList.remove('active'));
+          document.getElementById(sectionId).classList.add('active');
+          
+          if (window.innerWidth <= 768) {
+              toggleSidebar();
+          }
+      }
+
+      // Initialize sidebar state based on screen size
+      function initializeSidebar() {
+          const sidebar = document.querySelector('.sidebar');
+          if (window.innerWidth <= 768) {
+              sidebar.classList.add('minimized');
+          } else {
+              sidebar.classList.remove('minimized');
+          }
+      }
+
+      // Call initializeSidebar on page load and window resize
+      window.addEventListener('load', initializeSidebar);
+      window.addEventListener('resize', initializeSidebar);
+
+       // Sample call data (you would replace this with your actual data)
+       const callData = [
+            // September 20, 2023
+            {
+                date: '2023-09-20',
+                time: '01:16PM',
+                cost: 0.90,
+                phoneNumber: '+1 (555) 123-4567',
+                recordingUrl: 'https://example.com/recording1.wav',
+                transcript: 'Transcript text here...',
+                summary: 'Call summary here...',
+                qualifyingQuestions: 'Qualifying questions here...'
+            },
+            {
+                date: '2023-09-20',
+                time: '02:17PM',
+                cost: 0.92,
+                phoneNumber: '+1 (555) 123-4567',
+                recordingUrl: 'https://example.com/recording1.wav',
+                transcript: 'Transcript text here...',
+                summary: 'Call summary here...',
+                qualifyingQuestions: 'Qualifying questions here...'
+            },
+            // ... (more calls for September 20) ...
+            
+            // September 21, 2023
+            {
+                date: '2023-09-21',
+                time: '09:30AM',
+                cost: 0.75,
+                phoneNumber: '+1 (555) 987-6543',
+                recordingUrl: 'https://example.com/recording2.wav',
+                transcript: 'Another transcript text...',
+                summary: 'Another call summary...',
+                qualifyingQuestions: 'More qualifying questions...'
+            },
+            // ... (more calls for September 21) ...
+        ];
+
+        
+        function createCallItem(call) {
+    return `
+        <li class="call-item">
+            <div class="call-header">
+                ${call.time} | Cost: $${call.cost.toFixed(2)}
+            </div>
+            <audio class="call-player" controls>
+                <source src="${call.recordingUrl}" type="audio/wav">
+                Your browser does not support the audio element.
+            </audio>
+            <div class="call-details">
+                <div class="call-detail"><strong>Phone Number:</strong> ${call.phoneNumber}</div>
+                <div class="call-detail"><strong>Transcript:</strong> <button onclick="showPreview('Transcript', '${encodeURIComponent(call.transcript)}')">View</button></div>
+                <div class="call-detail"><strong>Summary:</strong> <button onclick="showPreview('Call Summary', '${encodeURIComponent(call.summary)}')">Read</button></div>
+                <div class="call-detail"><strong>Qualifying Questions:</strong> <button onclick="showPreview('Qualifying Questions', '${encodeURIComponent(call.qualifyingQuestions)}')">View</button></div>
+            </div>
+        </li>
+    `;
+}
+
+function groupCallsByDateAndTime(calls) {
+    return calls.reduce((groups, call) => {
+        const dateTimeKey = `${call.date} ${call.time}`; // Group by both date and time
+        (groups[dateTimeKey] = groups[dateTimeKey] || []).push(call);
+        return groups;
+    }, {});
+}
+
+function formatDateTime(dateString, timeString) {
+    const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const formattedDate = new Date(dateString).toLocaleDateString(undefined, dateOptions);
+    
+    // Directly use the timeString, which already includes AM/PM
+    const formattedTime = timeString; // No changes needed here, it retains AM/PM
+
+    return `${formattedDate} at ${formattedTime}`; // Combine formatted date and time
+}
+
+
+
+function toggleCallList(element) {
+    const callList = element.nextElementSibling;
+    callList.classList.toggle('show');
+}
+
+function showPreview(title, content) {
+    const modal = document.getElementById('preview-modal');
+    const previewTitle = document.getElementById('preview-title');
+    const previewText = document.getElementById('preview-text');
+
+    previewTitle.textContent = title;
+    previewText.textContent = decodeURIComponent(content);
+    modal.style.display = 'block';
+}
+
+document.querySelector('.close-preview').onclick = function() {
+    document.getElementById('preview-modal').style.display = 'none';
+}
+
+window.onclick = function(event) {
+    const modal = document.getElementById('preview-modal');
+    if (event.target == modal) {
+        modal.style.display = 'none';
+    }
+}
+
+function loadCallsInBatches(allCalls, batchSize = 10) {
+    let currentIndex = 0;
+
+    function loadBatch() {
+        const batch = allCalls.slice(currentIndex, currentIndex + batchSize);
+        const groupedCalls = groupCallsByDateAndTime(batch);
+
+        for (const dateTimeKey in groupedCalls) {
+            const dateTime = dateTimeKey.split(" ");
+            const date = dateTime[0];
+            const time = dateTime[1];
+            const formattedDateTime = formatDateTime(date, time);
+
+            // Check if folder for this date and time already exists
+            const dateTimeGroup = document.querySelector(`.call-folder h3[data-date-time="${dateTimeKey}"]`);
+            if (dateTimeGroup) {
+                const callList = dateTimeGroup.nextElementSibling;
+                groupedCalls[dateTimeKey].forEach(call => {
+                    callList.insertAdjacentHTML('beforeend', createCallItem(call));
+                });
+            } else {
+                const newFolder = document.createElement('div');
+                newFolder.className = 'call-folder';
+                newFolder.innerHTML = `
+                    <h3 onclick="toggleCallList(this)" data-date-time="${dateTimeKey}">${formattedDateTime}</h3>
+                    <ul class="call-list">
+                        ${groupedCalls[dateTimeKey].map(createCallItem).join('')}
+                    </ul>
+                `;
+                document.getElementById('call-folders').appendChild(newFolder);
+            }
+        }
+
+        currentIndex += batchSize;
+
+        if (currentIndex < allCalls.length) {
+            setTimeout(loadBatch, 0);
+        }
+    }
+
+    loadBatch();
+}
+
+// Call this function when the page loads
+window.addEventListener('load', () => {
+    loadCallsInBatches(callData);
+});
+const callsPerPage = 10; // Number of calls (folders) per page
+let currentPage = 1;
+let totalPages = 0;
+
+function createPaginationControls(totalPages) {
+    const paginationControls = document.getElementById('pagination-controls');
+    paginationControls.innerHTML = ''; // Clear existing buttons
+
+    // Create pagination buttons
+    for (let i = 1; i <= totalPages; i++) {
+        const button = document.createElement('button');
+        button.textContent = i;
+        button.className = 'page-button';
+        if (i === currentPage) {
+            button.classList.add('active');
+        }
+        button.addEventListener('click', () => goToPage(i));
+        paginationControls.appendChild(button);
+    }
+}
+
+function goToPage(pageNumber) {
+    currentPage = pageNumber;
+    renderCallsForCurrentPage();
+    createPaginationControls(totalPages); // Update pagination buttons (active state)
+}
+
+function renderCallsForCurrentPage() {
+    const callFoldersContainer = document.getElementById('call-folders');
+    callFoldersContainer.innerHTML = ''; // Clear previous calls
+
+    const allCalls = Object.entries(groupCallsByDateAndTime(callData)); // Group calls
+    totalPages = Math.ceil(allCalls.length / callsPerPage);
+
+    // Calculate which calls to display on the current page
+    const start = (currentPage - 1) * callsPerPage;
+    const end = start + callsPerPage;
+
+    const callsForPage = allCalls.slice(start, end); // Get the calls for the current page
+
+    // Display the calls (folders)
+    callsForPage.forEach(([dateTimeKey, calls]) => {
+        const dateTime = dateTimeKey.split(" ");
+        const date = dateTime[0];
+        const time = dateTime[1];
+        const formattedDateTime = formatDateTime(date, time);
+
+        const newFolder = document.createElement('div');
+        newFolder.className = 'call-folder';
+        newFolder.innerHTML = `
+            <h3 onclick="toggleCallList(this)" data-date-time="${dateTimeKey}">${formattedDateTime}</h3>
+            <ul class="call-list">
+                ${calls.map(createCallItem).join('')}
+            </ul>
+        `;
+        callFoldersContainer.appendChild(newFolder);
+    });
+}
+
+function loadCallsInBatches() {
+    renderCallsForCurrentPage();
+    createPaginationControls(totalPages); // Create the initial pagination buttons
+}
+
+// Call this function when the page loads
+window.addEventListener('load', () => {
+    loadCallsInBatches();
+});
+
+function updateChartData() {
+        // Get the updated values from the HTML
+        const totalCalls = parseInt(document.querySelector('[data-total-calls]').getAttribute('data-total-calls'));
+        const successfulConnections = parseInt(document.querySelector('[data-successful-connections]').getAttribute('data-successful-connections'));
+        const notAnswered = parseInt(document.querySelector('[data-not-answered]').getAttribute('data-not-answered'));
+
+        // Update the chart with new data
+        dailyCallSummaryChart.data.datasets[0].data = [totalCalls, successfulConnections, notAnswered];
+        dailyCallSummaryChart.update();
+    }
+
+    // Initialize the chart with colors that adapt to light/dark theme
+    function initChart() {
+        const isDarkMode = document.body.dataset.theme === 'dark';
+
+        const chartBackgroundColor = isDarkMode ? ['rgba(155, 89, 182, 0.2)', 'rgba(46, 204, 113, 0.2)', 'rgba(231, 76, 60, 0.2)']
+                                                : ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 0.2)'];
+        const chartBorderColor = isDarkMode ? ['rgba(155, 89, 182, 1)', 'rgba(46, 204, 113, 1)', 'rgba(231, 76, 60, 1)']
+                                            : ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)'];
+
+        const dailyCallSummaryData = {
+            labels: ['Total Calls', 'Successful Connections', 'Not Answered'],
+            datasets: [{
+                label: 'Calls',
+                data: [
+                    parseInt(document.querySelector('[data-total-calls]').getAttribute('data-total-calls')),
+                    parseInt(document.querySelector('[data-successful-connections]').getAttribute('data-successful-connections')),
+                    parseInt(document.querySelector('[data-not-answered]').getAttribute('data-not-answered'))
+                ],
+                backgroundColor: chartBackgroundColor,
+                borderColor: chartBorderColor,
+                borderWidth: 1
+            }]
+        };
+
+        const config = {
+            type: 'bar',
+            data: dailyCallSummaryData,
+            options: {
+                maintainAspectRatio: false, // Make chart responsive
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        };
+
+        const ctx = document.getElementById('dailyCallSummaryChart').getContext('2d');
+        window.dailyCallSummaryChart = new Chart(ctx, config);
+    }
+
+    // Initialize the chart on page load
+    window.addEventListener('load', initChart);
+
+    // Re-initialize the chart on theme change
+    function toggleTheme() {
+        const body = document.body;
+        body.dataset.theme = body.dataset.theme === 'dark' ? '' : 'dark';
+        dailyCallSummaryChart.destroy(); // Destroy existing chart
+        initChart(); // Recreate chart with new theme colors
+    }
+
+    // Watch for changes in HTML data and update the chart
+    const dataElements = document.querySelectorAll('[data-total-calls], [data-successful-connections], [data-not-answered]');
+    dataElements.forEach(element => {
+        element.addEventListener('DOMSubtreeModified', updateChartData);
+    });
+
+    function updateCallOutcomesChartData() {
+        // Get the updated values from the HTML
+        const uninterestedLeads = parseInt(document.querySelector('[data-uninterested-leads]').textContent.match(/\d+/)[0]);
+        const transferredCalls = parseInt(document.querySelector('[data-transfered-calls]').textContent.match(/\d+/)[0]);
+        const appointmentsScheduled = parseInt(document.querySelector('[data-appointments-scheduled]').textContent.match(/\d+/)[0]);
+
+        // Update the chart with new data
+        callOutcomesChart.data.datasets[0].data = [uninterestedLeads, transferredCalls, appointmentsScheduled];
+        callOutcomesChart.update();
+    }
+
+    // Initialize the Call Outcomes chart with theme-adaptive colors
+    function initCallOutcomesChart() {
+        const isDarkMode = document.body.dataset.theme === 'dark';
+
+        const chartBackgroundColor = isDarkMode ? ['rgba(241, 196, 15, 0.2)', 'rgba(52, 152, 219, 0.2)', 'rgba(39, 174, 96, 0.2)']
+                                                : ['rgba(255, 159, 64, 0.2)', 'rgba(75, 192, 192, 0.2)', 'rgba(153, 102, 255, 0.2)'];
+        const chartBorderColor = isDarkMode ? ['rgba(241, 196, 15, 1)', 'rgba(52, 152, 219, 1)', 'rgba(39, 174, 96, 1)']
+                                            : ['rgba(255, 159, 64, 1)', 'rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)'];
+
+        const callOutcomesData = {
+            labels: ['Uninterested Leads', 'Transferred Calls', 'Appointments Scheduled'],
+            datasets: [{
+                label: 'Call Outcomes',
+                data: [
+                    parseInt(document.querySelector('[data-uninterested-leads]').textContent.match(/\d+/)[0]),
+                    parseInt(document.querySelector('[data-transfered-calls]').textContent.match(/\d+/)[0]),
+                    parseInt(document.querySelector('[data-appointments-scheduled]').textContent.match(/\d+/)[0])
+                ],
+                backgroundColor: chartBackgroundColor,
+                borderColor: chartBorderColor,
+                borderWidth: 1
+            }]
+        };
+
+        const config = {
+            type: 'pie', // You can use 'bar' or any other chart type based on your preference
+            data: callOutcomesData,
+            options: {
+                maintainAspectRatio: false, // Responsive chart
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                }
+            }
+        };
+
+        const ctx = document.getElementById('callOutcomesChart').getContext('2d');
+        window.callOutcomesChart = new Chart(ctx, config);
+    }
+
+    // Initialize the Call Outcomes chart on page load
+    window.addEventListener('load', initCallOutcomesChart);
+
+    // Re-initialize the Call Outcomes chart on theme change
+    function toggleTheme() {
+        const body = document.body;
+        body.dataset.theme = body.dataset.theme === 'dark' ? '' : 'dark';
+        callOutcomesChart.destroy(); // Destroy existing chart
+        initCallOutcomesChart(); // Recreate chart with new theme colors
+    }
+
+    // Watch for changes in HTML data and update the chart
+    const outcomeDataElements = document.querySelectorAll('[data-uninterested-leads], [data-transfered-calls], [data-appointments-scheduled]');
+    outcomeDataElements.forEach(element => {
+        element.addEventListener('DOMSubtreeModified', updateCallOutcomesChartData);
+    });
+
+    
+    function updateLeadStatusChartData() {
+        // Get the updated values from the HTML
+        const qualifiedLeads = parseInt(document.querySelector('[data-qualified-leads]').textContent.match(/\d+/)[0]);
+        const unqualifiedLeads = parseInt(document.querySelector('[data-unqualified-leads]').textContent.match(/\d+/)[0]);
+        const yetToContact = parseInt(document.querySelector('[data-yet-to-contact]').textContent.match(/\d+/)[0]);
+
+        // Update the chart with new data
+        leadStatusChart.data.datasets[0].data = [qualifiedLeads, unqualifiedLeads, yetToContact];
+        leadStatusChart.update();
+    }
+
+    // Initialize the Lead Status chart with theme-adaptive colors
+    function initLeadStatusChart() {
+        const isDarkMode = document.body.dataset.theme === 'dark';
+
+        const chartBackgroundColor = isDarkMode ? ['rgba(241, 196, 15, 0.2)', 'rgba(52, 152, 219, 0.2)', 'rgba(39, 174, 96, 0.2)']
+                                                : ['rgba(255, 159, 64, 0.2)', 'rgba(75, 192, 192, 0.2)', 'rgba(153, 102, 255, 0.2)'];
+        const chartBorderColor = isDarkMode ? ['rgba(241, 196, 15, 1)', 'rgba(52, 152, 219, 1)', 'rgba(39, 174, 96, 1)']
+                                            : ['rgba(255, 159, 64, 1)', 'rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)'];
+
+        const leadStatusData = {
+            labels: ['Qualified Leads', 'Unqualified Leads', 'Yet to be Contacted'],
+            datasets: [{
+                label: 'Lead Status',
+                data: [
+                    parseInt(document.querySelector('[data-qualified-leads]').textContent.match(/\d+/)[0]),
+                    parseInt(document.querySelector('[data-unqualified-leads]').textContent.match(/\d+/)[0]),
+                    parseInt(document.querySelector('[data-yet-to-contact]').textContent.match(/\d+/)[0])
+                ],
+                backgroundColor: chartBackgroundColor,
+                borderColor: chartBorderColor,
+                borderWidth: 1
+            }]
+        };
+
+        const config = {
+            type: 'bar',
+            data: leadStatusData,
+            options: {
+                maintainAspectRatio: false,
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                }
+            }
+        };
+
+        const ctx = document.getElementById('leadStatusChart').getContext('2d');
+        window.leadStatusChart = new Chart(ctx, config);
+    }
+
+    // Initialize the Lead Status chart on page load
+    window.addEventListener('load', initLeadStatusChart);
+
+    // Re-initialize the Lead Status chart on theme change
+    function toggleTheme() {
+        const body = document.body;
+        body.dataset.theme = body.dataset.theme === 'dark' ? '' : 'dark';
+        leadStatusChart.destroy(); // Destroy existing chart
+        initLeadStatusChart(); // Recreate chart with new theme colors
+    }
+
+    // Watch for changes in HTML data and update the chart
+    const leadStatusDataElements = document.querySelectorAll('[data-qualified-leads], [data-unqualified-leads], [data-yet-to-contact]');
+    leadStatusDataElements.forEach(element => {
+        element.addEventListener('DOMSubtreeModified', updateLeadStatusChartData);
+    });
+
+    function updateResponseRateChartData() {
+        // Get the updated values from the HTML
+        const callsAnswered = parseInt(document.querySelector('[data-calls-answered]').textContent.match(/\d+/)[0]);
+        const callsConversation = parseInt(document.querySelector('[data-calls-conversation]').textContent.match(/\d+/)[0]);
+        const positiveOutcome = parseInt(document.querySelector('[data-positive-outcome]').textContent.match(/\d+/)[0]);
+
+        // Update the chart with new data
+        responseRateChart.data.datasets[0].data = [callsAnswered, callsConversation, positiveOutcome];
+        responseRateChart.update();
+    }
+
+    // Initialize the Response Rate chart with theme-adaptive colors
+    function initResponseRateChart() {
+        const isDarkMode = document.body.dataset.theme === 'dark';
+
+        const chartBackgroundColor = isDarkMode ? ['rgba(241, 196, 15, 0.2)', 'rgba(52, 152, 219, 0.2)', 'rgba(39, 174, 96, 0.2)']
+                                                : ['rgba(255, 159, 64, 0.2)', 'rgba(75, 192, 192, 0.2)', 'rgba(153, 102, 255, 0.2)'];
+        const chartBorderColor = isDarkMode ? ['rgba(241, 196, 15, 1)', 'rgba(52, 152, 219, 1)', 'rgba(39, 174, 96, 1)']
+                                            : ['rgba(255, 159, 64, 1)', 'rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)'];
+
+        const responseRateData = {
+            labels: ['Calls Answered', 'Calls Resulting in Conversation', 'Positive Outcome'],
+            datasets: [{
+                label: 'Response Rate',
+                data: [
+                    parseInt(document.querySelector('[data-calls-answered]').textContent.match(/\d+/)[0]),
+                    parseInt(document.querySelector('[data-calls-conversation]').textContent.match(/\d+/)[0]),
+                    parseInt(document.querySelector('[data-positive-outcome]').textContent.match(/\d+/)[0])
+                ],
+                backgroundColor: chartBackgroundColor,
+                borderColor: chartBorderColor,
+                borderWidth: 1
+            }]
+        };
+
+        const config = {
+            type: 'doughnut',
+            data: responseRateData,
+            options: {
+                maintainAspectRatio: false,
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                }
+            }
+        };
+
+        const ctx = document.getElementById('responseRateChart').getContext('2d');
+        window.responseRateChart = new Chart(ctx, config);
+    }
+
+    // Initialize the Response Rate chart on page load
+    window.addEventListener('load', initResponseRateChart);
+
+    // Re-initialize the Response Rate chart on theme change
+    function toggleTheme() {
+        const body = document.body;
+        body.dataset.theme = body.dataset.theme === 'dark' ? '' : 'dark';
+        responseRateChart.destroy(); // Destroy existing chart
+        initResponseRateChart(); // Recreate chart with new theme colors
+    }
+
+    // Watch for changes in HTML data and update the chart
+    const responseRateDataElements = document.querySelectorAll('[data-calls-answered], [data-calls-conversation], [data-positive-outcome]');
+    responseRateDataElements.forEach(element => {
+        element.addEventListener('DOMSubtreeModified', updateResponseRateChartData);
+    });
+
+    function updatePerformanceMetricsChartData() {
+        // Get the updated values from the HTML
+        const callsMade = parseInt(document.querySelector('[data-calls-made]').textContent.match(/\d+/)[0]);
+
+        // Update the chart with new data
+        performanceMetricsChart.data.datasets[0].data = [callsMade, callsMade - 20, callsMade + 30, callsMade - 10, callsMade, callsMade + 15, callsMade - 5];
+        performanceMetricsChart.update();
+    }
+
+    // Initialize the Performance Metrics chart with theme-adaptive colors
+    function initPerformanceMetricsChart() {
+        const isDarkMode = document.body.dataset.theme === 'dark';
+
+        const chartBackgroundColor = isDarkMode ? 'rgba(241, 196, 15, 0.2)' : 'rgba(255, 159, 64, 0.2)';
+        const chartBorderColor = isDarkMode ? 'rgba(241, 196, 15, 1)' : 'rgba(255, 159, 64, 1)';
+
+        const performanceMetricsData = {
+            labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+            datasets: [{
+                label: 'Calls Made',
+                data: [
+                    parseInt(document.querySelector('[data-calls-made]').textContent.match(/\d+/)[0]), 
+                    150, 200, 180, 210, 190, 170 // Example data for other days
+                ],
+                backgroundColor: chartBackgroundColor,
+                borderColor: chartBorderColor,
+                fill: true
+            }]
+        };
+
+        const config = {
+            type: 'line',
+            data: performanceMetricsData,
+            options: {
+                maintainAspectRatio: false,
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        };
+
+        const ctx = document.getElementById('performanceMetricsChart').getContext('2d');
+        window.performanceMetricsChart = new Chart(ctx, config);
+    }
+
+    // Initialize the Performance Metrics chart on page load
+    window.addEventListener('load', initPerformanceMetricsChart);
+
+    // Re-initialize the Performance Metrics chart on theme change
+    function toggleTheme() {
+        const body = document.body;
+        body.dataset.theme = body.dataset.theme === 'dark' ? '' : 'dark';
+        performanceMetricsChart.destroy(); // Destroy existing chart
+        initPerformanceMetricsChart(); // Recreate chart with new theme colors
+    }
+
+    // Watch for changes in HTML data and update the chart
+    const performanceMetricsDataElements = document.querySelectorAll('[data-calls-made]');
+    performanceMetricsDataElements.forEach(element => {
+        element.addEventListener('DOMSubtreeModified', updatePerformanceMetricsChartData);
+    });
+
+  </script>
+</body>
+</html>
