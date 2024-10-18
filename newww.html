@@ -501,10 +501,147 @@
     }
 }
 
+/* Updated login styles */
+.login-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
 
+.login-container {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    padding: 40px;
+    width: 400px; /* Increased width */
+    transition: transform 0.3s ease-in-out;
+}
+
+.login-box {
+    text-align: center;
+}
+
+.logo-container {
+    margin-bottom: 30px;
+}
+
+.login-box .logo {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+}
+
+.login-box h1 {
+    color: #333;
+    margin: 20px 0 10px;
+    font-weight: 600;
+}
+
+.login-box h2 {
+    color: #764ba2;
+    margin: 0 0 20px;
+    font-weight: 400;
+    font-size: 1.2em;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.input-group i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #764ba2;
+}
+
+.login-box input {
+    width: 100%;
+    padding: 15px 15px 15px 45px;
+    border: none;
+    border-radius: 50px;
+    background-color: #f0f0f0;
+    font-size: 16px;
+    transition: all 0.3s ease-in-out;
+}
+
+.login-box input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #764ba2;
+}
+
+.login-box button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 600;
+    transition: all 0.3s ease-in-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.login-box button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.login-box button i {
+    margin-left: 10px;
+}
+
+.error-message {
+    color: #ff4757;
+    margin-top: 20px;
+    font-weight: 300;
+}
+
+/* Hide dashboard content when login overlay is visible */
+.login-overlay:not(.hidden) + .container {
+    display: none;
+}
     </style>
 </head>
 <body>
+    <div id="login-overlay" class="login-overlay">
+        <div class="login-container">
+            <div class="login-box">
+                <div class="logo-container">
+                    <img src="logo.jpeg" alt="SalesTug Voice AI Logo" class="logo">
+                    <h1>SalesTug Voice AI</h1>
+                    <h2>Exit Realty Bot</h2>
+                </div>
+                <form id="loginForm">
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" placeholder="Email" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" placeholder="Password" required>
+                    </div>
+                    <button type="submit">Login <i class="fas fa-sign-in-alt"></i></button>
+                </form>
+                <p id="errorMessage" class="error-message"></p>
+            </div>
+        </div>
+    </div>
     <div class="container">
         <div class="sidebar">
             <div class="logo-container">
@@ -608,6 +745,93 @@
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
+      // Login functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const loginForm = document.getElementById('loginForm');
+    const errorMessage = document.getElementById('errorMessage');
+    const loginOverlay = document.getElementById('login-overlay');
+    const inputs = document.querySelectorAll('#loginForm input');
+
+    const users = [
+        { email: "sagaryadagiri69@gmail.com", password: "sY69#2024" },
+        { email: "sagaryadagiri29@gmail.com", password: "sY29#2024" },
+        { email: "nishithdesstti@gmail.com", password: "6302019864" },
+        { email: "yadagiriy397@gmail.com", password: "yY397#2024" },
+        { email: "voice.ai.salestug@gmail.com", password: "SalesTug" },
+        { email: "sidharthsaji54@gmail.com", password: "2024-2025" },
+        { email: "sajisidharth45@gmail.com", password: "sS45#2024" }
+    ];
+
+    // Add focus and blur effects to inputs
+    inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.parentElement.classList.add('focused');
+        });
+
+        input.addEventListener('blur', function() {
+            if (this.value === '') {
+                this.parentElement.classList.remove('focused');
+            }
+        });
+    });
+
+    loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        console.log('Login form submitted'); // Debug log
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        console.log('Email:', email, 'Password:', password); // Debug log
+
+        const user = users.find(u => u.email === email && u.password === password);
+
+        if (user) {
+            console.log('Login successful'); // Debug log
+            // Successful login
+            errorMessage.textContent = '';
+            loginForm.classList.add('success');
+            
+            // Hide login overlay and show dashboard
+            setTimeout(() => {
+                loginOverlay.style.display = 'none';
+                document.querySelector('.container').style.display = 'flex';
+                console.log('Dashboard displayed'); // Debug log
+                // You might want to initialize any dashboard-specific functionality here
+                initializeDashboard();
+            }, 1000);
+        } else {
+            console.log('Login failed'); // Debug log
+            // Failed login
+            errorMessage.textContent = 'Invalid email or password';
+            loginForm.classList.add('error');
+            
+            setTimeout(() => {
+                loginForm.classList.remove('error');
+            }, 500);
+        }
+    });
+});
+
+function initializeDashboard() {
+    // Initialize your dashboard-specific functionality here
+    // For example, you might want to load initial data, set up event listeners, etc.
+    console.log("Dashboard initialized");
+}
+
+// Check login status on page load
+function checkLoginStatus() {
+    // In a real-world scenario, you'd check for a valid session or token here
+    // For this example, we'll just show the login overlay
+    document.getElementById('login-overlay').style.display = 'flex';
+    document.querySelector('.container').style.display = 'none';
+    console.log('Login overlay displayed'); // Debug log
+}
+
+// Call this function when the page loads
+window.addEventListener('load', checkLoginStatus);
+
+      
       function toggleSidebar() {
           const sidebar = document.querySelector('.sidebar');
           sidebar.classList.toggle('minimized');
