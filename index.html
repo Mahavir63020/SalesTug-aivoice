@@ -7,20 +7,21 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* Custom logo placeholder styling */
         .logo-placeholder {
             background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
             clip-path: polygon(25% 0%, 75% 0%, 100% 25%, 100% 75%, 75% 100%, 25% 100%, 0% 75%, 0% 25%);
         }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center p-4">
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-md bg-white rounded-xl shadow-lg overflow-hidden min-h-[700px] flex flex-col">
         <!-- Header -->
         <div class="bg-blue-600 text-white text-center py-6 px-4">
             <div class="flex justify-center items-center mb-4">
                 <!-- Logo Placeholder -->
                 <div class="logo-placeholder w-20 h-20 flex items-center justify-center mr-4">
-                    <span class="text-white font-bold text-2xl"><img src="logo.jpeg"> </span>
+                    <span class="text-white font-bold text-2xl"><img src="logo.jpeg"></span>
                 </div>
                 <div>
                     <h1 class="text-3xl font-bold">SalesTug</h1>
@@ -30,62 +31,28 @@
             <p class="text-sm mt-2 opacity-90">Empower Your Sales with Intelligent Voice AI</p>
         </div>
 
-        <!-- Audio Upload and Player Container -->
-        <div class="p-6 flex-grow flex flex-col">
-            <!-- URL Input Section -->
-            <div id="audioUrlSection" class="mb-6">
-                <div class="flex">
-                    <input 
-                        type="text" 
-                        id="audioUrlInput" 
-                        placeholder="Paste audio file URL here" 
-                        class="flex-grow p-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                    <button 
-                        id="loadAudioBtn" 
-                        class="bg-blue-600 text-white px-4 rounded-r-lg hover:bg-blue-700 transition-colors"
-                    >
-                        Load
+        <!-- Audio Player Container -->
+        <div class="p-6 flex-grow flex items-center">
+            <div class="bg-gray-50 rounded-lg p-6 border border-gray-200 w-full">
+                <!-- Audio Element -->
+                <audio id="audioPlayer" class="w-full mb-6">
+                    <source src="https://storage.vapi.ai/dd0ba16b-75f6-42fc-9711-f3dccf4d4aa1-1733248428941-2968b750-1061-4c76-a656-26546892f79d-stereo.wav" type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+
+                <!-- Custom Controls -->
+                <div class="flex flex-col items-center space-y-6">
+                    <!-- Play/Pause Button -->
+                    <button id="playPauseBtn" class="text-blue-600 hover:text-blue-800 focus:outline-none">
+                        <i class="fas fa-play-circle text-6xl"></i>
                     </button>
-                </div>
-                <p id="errorMessage" class="text-red-500 mt-2 text-sm"></p>
-            </div>
 
-            <!-- Audio Player Container -->
-            <div class="flex-grow flex items-center">
-                <div class="bg-gray-50 rounded-lg p-6 border border-gray-200 w-full">
-                    <!-- Audio Element -->
-                    <audio id="audioPlayer" class="w-full mb-6">
-                        Your browser does not support the audio element.
-                    </audio>
-
-                    <!-- Custom Controls -->
-                    <div class="flex flex-col items-center space-y-6">
-                        <!-- Remove Link Button -->
-                        <button id="removeAudioBtn" class="text-red-600 hover:text-red-800 mb-4 hidden">
-                            Listen
-                        </button>
-
-                        <!-- Play/Pause Button -->
-                        <button id="playPauseBtn" class="text-blue-600 hover:text-blue-800 focus:outline-none" disabled>
-                            <i class="fas fa-play-circle text-6xl"></i>
-                        </button>
-
-                        <!-- Progress Container -->
-                        <div class="w-full">
-                            <input 
-                                type="range" 
-                                id="progressBar" 
-                                class="w-full h-3 bg-gray-300 rounded-lg appearance-none cursor-pointer" 
-                                value="0" 
-                                min="0" 
-                                max="100" 
-                                disabled
-                            >
-                            <div class="flex justify-between text-sm text-gray-600 mt-2">
-                                <span id="currentTime">0:00</span>
-                                <span id="duration">0:00</span>
-                            </div>
+                    <!-- Progress Container -->
+                    <div class="w-full">
+                        <input type="range" id="progressBar" class="w-full h-3 bg-gray-300 rounded-lg appearance-none cursor-pointer" value="0" min="0" max="100">
+                        <div class="flex justify-between text-sm text-gray-600 mt-2">
+                            <span id="currentTime">0:00</span>
+                            <span id="duration">0:00</span>
                         </div>
                     </div>
                 </div>
@@ -102,25 +69,13 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const audioUrlInput = document.getElementById('audioUrlInput');
-            const loadAudioBtn = document.getElementById('loadAudioBtn');
-            const audioUrlSection = document.getElementById('audioUrlSection');
-            const removeAudioBtn = document.getElementById('removeAudioBtn');
             const audioPlayer = document.getElementById('audioPlayer');
             const playPauseBtn = document.getElementById('playPauseBtn');
             const progressBar = document.getElementById('progressBar');
             const currentTimeEl = document.getElementById('currentTime');
             const durationEl = document.getElementById('duration');
-            const errorMessageEl = document.getElementById('errorMessage');
-
             const playIcon = '<i class="fas fa-play-circle text-6xl"></i>';
             const pauseIcon = '<i class="fas fa-pause-circle text-6xl"></i>';
-
-            // Load saved audio URL on page load
-            const savedAudioUrl = localStorage.getItem('savedAudioUrl');
-            if (savedAudioUrl) {
-                loadAudio(savedAudioUrl);
-            }
 
             // Format time in mm:ss
             function formatTime(seconds) {
@@ -128,81 +83,6 @@
                 const secs = Math.floor(seconds % 60);
                 return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
             }
-
-            // Load audio function
-            function loadAudio(audioUrl) {
-                // Reset previous state
-                errorMessageEl.textContent = '';
-                resetControls();
-
-                // Create new source element
-                audioPlayer.innerHTML = '';
-                const sourceEl = document.createElement('source');
-                sourceEl.src = audioUrl;
-                sourceEl.type = 'audio/wav'; // You might want to detect or allow different types
-                audioPlayer.appendChild(sourceEl);
-
-                // Attempt to load audio
-                audioPlayer.load();
-
-                // Hide URL input section
-                audioUrlSection.style.display = 'none';
-                removeAudioBtn.classList.remove('hidden');
-
-                // Save URL to localStorage
-                localStorage.setItem('savedAudioUrl', audioUrl);
-
-                // Handle successful loading
-                audioPlayer.addEventListener('loadedmetadata', () => {
-                    durationEl.textContent = formatTime(audioPlayer.duration);
-                    progressBar.max = 100;
-                    playPauseBtn.disabled = false;
-                    progressBar.disabled = false;
-                });
-
-                // Handle loading errors
-                audioPlayer.addEventListener('error', () => {
-                    errorMessageEl.textContent = 'Error loading audio. Please check the URL.';
-                    localStorage.removeItem('savedAudioUrl');
-                });
-            }
-
-            // Reset audio player controls
-            function resetControls() {
-                playPauseBtn.innerHTML = playIcon;
-                playPauseBtn.disabled = true;
-                progressBar.disabled = true;
-                progressBar.value = 0;
-                currentTimeEl.textContent = '0:00';
-                durationEl.textContent = '0:00';
-            }
-
-            // Load audio from URL
-            loadAudioBtn.addEventListener('click', () => {
-                const audioUrl = audioUrlInput.value.trim();
-                
-                if (!audioUrl) {
-                    errorMessageEl.textContent = 'Please enter a valid audio URL';
-                    return;
-                }
-
-                loadAudio(audioUrl);
-            });
-
-            // Remove audio link
-            removeAudioBtn.addEventListener('click', () => {
-                // Clear localStorage
-                localStorage.removeItem('savedAudioUrl');
-
-                // Reset audio player
-                audioPlayer.innerHTML = '';
-                resetControls();
-
-                // Show URL input section
-                audioUrlSection.style.display = 'block';
-                removeAudioBtn.classList.add('hidden');
-                audioUrlInput.value = '';
-            });
 
             // Play/Pause functionality
             playPauseBtn.addEventListener('click', () => {
@@ -220,6 +100,12 @@
                 const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
                 progressBar.value = progress;
                 currentTimeEl.textContent = formatTime(audioPlayer.currentTime);
+            });
+
+            // Set duration when metadata is loaded
+            audioPlayer.addEventListener('loadedmetadata', () => {
+                durationEl.textContent = formatTime(audioPlayer.duration);
+                progressBar.max = 100;
             });
 
             // Seek functionality
