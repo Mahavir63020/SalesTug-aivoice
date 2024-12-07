@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SalesTug Voice AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Custom logo placeholder styling */
+        .logo-placeholder {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            clip-path: polygon(25% 0%, 75% 0%, 100% 25%, 100% 75%, 75% 100%, 25% 100%, 0% 75%, 0% 25%);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-md bg-white rounded-xl shadow-lg overflow-hidden min-h-[700px] flex flex-col">
+        <!-- Header -->
+        <div class="bg-blue-600 text-white text-center py-6 px-4">
+            <div class="flex justify-center items-center mb-4">
+                <!-- Logo Placeholder -->
+                <div class="logo-placeholder w-20 h-20 flex items-center justify-center mr-4">
+                    <span class="text-white font-bold text-2xl"><img src="logo.jpeg"></span>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-bold">SalesTug</h1>
+                    <p class="text-sm opacity-80">Voice AI</p>
+                </div>
+            </div>
+            <p class="text-sm mt-2 opacity-90">Empower Your Sales with Intelligent Voice AI</p>
+        </div>
+
+        <!-- Audio Player Container -->
+        <div class="p-6 flex-grow flex items-center">
+            <div class="bg-gray-50 rounded-lg p-6 border border-gray-200 w-full">
+                <!-- Audio Element -->
+                <audio id="audioPlayer" class="w-full mb-6">
+                    <source src="https://storage.vapi.ai/dd0ba16b-75f6-42fc-9711-f3dccf4d4aa1-1733248428941-2968b750-1061-4c76-a656-26546892f79d-stereo.wav" type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+
+                <!-- Custom Controls -->
+                <div class="flex flex-col items-center space-y-6">
+                    <!-- Play/Pause Button -->
+                    <button id="playPauseBtn" class="text-blue-600 hover:text-blue-800 focus:outline-none">
+                        <i class="fas fa-play-circle text-6xl"></i>
+                    </button>
+
+                    <!-- Progress Container -->
+                    <div class="w-full">
+                        <input type="range" id="progressBar" class="w-full h-3 bg-gray-300 rounded-lg appearance-none cursor-pointer" value="0" min="0" max="100">
+                        <div class="flex justify-between text-sm text-gray-600 mt-2">
+                            <span id="currentTime">0:00</span>
+                            <span id="duration">0:00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="p-6 bg-gray-100 text-center">
+            <a href="#" class="inline-block bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">
+                Discover SalesTug Voice AI
+            </a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const audioPlayer = document.getElementById('audioPlayer');
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            const progressBar = document.getElementById('progressBar');
+            const currentTimeEl = document.getElementById('currentTime');
+            const durationEl = document.getElementById('duration');
+            const playIcon = '<i class="fas fa-play-circle text-6xl"></i>';
+            const pauseIcon = '<i class="fas fa-pause-circle text-6xl"></i>';
+
+            // Format time in mm:ss
+            function formatTime(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60);
+                return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            }
+
+            // Play/Pause functionality
+            playPauseBtn.addEventListener('click', () => {
+                if (audioPlayer.paused) {
+                    audioPlayer.play();
+                    playPauseBtn.innerHTML = pauseIcon;
+                } else {
+                    audioPlayer.pause();
+                    playPauseBtn.innerHTML = playIcon;
+                }
+            });
+
+            // Update progress bar and time
+            audioPlayer.addEventListener('timeupdate', () => {
+                const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+                progressBar.value = progress;
+                currentTimeEl.textContent = formatTime(audioPlayer.currentTime);
+            });
+
+            // Set duration when metadata is loaded
+            audioPlayer.addEventListener('loadedmetadata', () => {
+                durationEl.textContent = formatTime(audioPlayer.duration);
+                progressBar.max = 100;
+            });
+
+            // Seek functionality
+            progressBar.addEventListener('change', () => {
+                const time = (progressBar.value / 100) * audioPlayer.duration;
+                audioPlayer.currentTime = time;
+            });
+
+            // Reset play button when audio ends
+            audioPlayer.addEventListener('ended', () => {
+                playPauseBtn.innerHTML = playIcon;
+                progressBar.value = 0;
+            });
+        });
+    </script>
+</body>
+</html>
